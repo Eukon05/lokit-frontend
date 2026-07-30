@@ -43,6 +43,7 @@ export default function useAuthSession() {
                 accessToken: token,
                 firstName: auth.user?.profile?.given_name ?? "",
                 lastName: auth.user?.profile?.family_name ?? "",
+                email: auth.user?.profile?.email ?? "",
                 roles: roles
             },
             login: () => auth.signinRedirect(),
