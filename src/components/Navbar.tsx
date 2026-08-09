@@ -1,4 +1,4 @@
-import useAuthSession from "../hooks/AuthSessionHook";
+import {useAuthSession} from "../contexts/AuthSessionContext.tsx"
 import "../style/navbar.css"
 
 function Navbar() {

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Outlet } from "react-router";
 import { withAuthenticationRequired } from "react-oidc-context";
-import useAuthSession from "../hooks/AuthSessionHook";
+import {useAuthSession} from "../contexts/AuthSessionContext";
 import NotAuthorized from "../components/NotAuthorized";
 import type { ProtectedRouteProps } from "../types/props/ProtectedRouteProps";
 
