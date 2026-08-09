@@ -6,4 +6,6 @@ export type AuthSession = {
     connectedUser: IdpUser,
     login: () => Promise<void>,
     logout: () => Promise<void>
-}
+    hasRole: (role: string) => Boolean,
+    hasAnyRole: (roles: string[]) => Boolean
+};

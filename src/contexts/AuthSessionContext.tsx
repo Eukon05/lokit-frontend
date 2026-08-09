@@ -1,15 +1,14 @@
-import { createContext, useMemo, useContext } from "react";
+import { createContext, useMemo } from "react";
 import { useAuth } from "react-oidc-context";
 import { jwtDecode } from "jwt-decode";
 import type { AuthSession } from "../types/AuthSession";
 import type { ReactNode } from "react";
 
 export const AuthSessionContext = createContext<AuthSession | null>(null);
+const roleClaims: string[] = import.meta.env.VITE_OIDC_ROLE_CLAIMS.split(",");
 
 function AuthSessionProvider({ children }: { children: ReactNode }) {
     const auth = useAuth();
-
-    const roleClaims: string[] = import.meta.env.VITE_OIDC_ROLE_CLAIMS.split(",");
     const authSession = useMemo(() => {
 
         const token: string = auth.user?.access_token ?? "";
@@ -49,7 +48,9 @@ function AuthSessionProvider({ children }: { children: ReactNode }) {
             login: () => auth.signinRedirect(),
             logout: () => auth.signoutRedirect({
                 post_logout_redirect_uri: window.location.origin
-            })
+            }),
+            hasRole: (role: string) => roles.includes(role),
+            hasAnyRole: (searchRoles: string[]) => searchRoles.some(r => roles.includes(r))
         }
 
         return session;
@@ -60,14 +61,6 @@ function AuthSessionProvider({ children }: { children: ReactNode }) {
             {children}
         </AuthSessionContext.Provider>
     );
-}
-
-export function useAuthSession() {
-  const ctx = useContext(AuthSessionContext);
-  if (ctx === null) {
-    throw new Error("useAuthSession must be used within an AuthSessionProvider");
-  }
-  return ctx;
 }
 
 export default AuthSessionProvider;

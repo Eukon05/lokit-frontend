@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 import { Outlet } from "react-router";
 import { withAuthenticationRequired } from "react-oidc-context";
-import {useAuthSession} from "../contexts/AuthSessionContext";
+import useAuthSession from "../hooks/useAuthSession";
 import NotAuthorized from "../components/NotAuthorized";
 import type { ProtectedRouteProps } from "../types/props/ProtectedRouteProps";
 
-function PrivateRouteComponent({ requiredRoles }: ProtectedRouteProps) {
+function PrivateRouteComponent({ allowedRoles }: ProtectedRouteProps) {
     const auth = useAuthSession();
     const backendUserSaved = useRef(false);
 
@@ -27,9 +27,8 @@ function PrivateRouteComponent({ requiredRoles }: ProtectedRouteProps) {
         });
     }, [auth.isAuthenticated, auth.connectedUser.accessToken]);
 
-    if (requiredRoles !== undefined && requiredRoles.length > 0) {
-        const filteredArray = auth.connectedUser.roles.filter(value => requiredRoles.includes(value));
-        if (filteredArray.length == 0) return <NotAuthorized />
+    if (allowedRoles !== undefined && allowedRoles.length > 0) {
+        if (!auth.hasAnyRole(allowedRoles)) return <NotAuthorized />
     }
 
     return <Outlet />

@@ -11,7 +11,7 @@ function App() {
             <div className='content'>
                 <BrowserRouter>
                 <Routes>
-                    <Route element={<ProtectedRoutes requiredRoles={["LOKIT_ADMIN"]} />}>
+                    <Route element={<ProtectedRoutes allowedRoles={["LOKIT_ADMIN"]} />}>
                         <Route path='/' element={<Home />} />
                     </Route>
                 </Routes>

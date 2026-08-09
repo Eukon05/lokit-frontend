@@ -1,4 +1,4 @@
-import { useAuthSession } from "../contexts/AuthSessionContext";
+import useAuthSession from "../hooks/useAuthSession";
 
 function Home() {
     const auth = useAuthSession();
