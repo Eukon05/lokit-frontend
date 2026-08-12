@@ -1,7 +1,9 @@
 function NotAuthorized() {
     return (
-        <div style={{textAlign: "center"}}>
-            <h1>You don't have the necessary permissions to view this page</h1>
+        <div className="hero">
+            <div className="hero-body">
+                <p className="title">You don't have the necessary permissions to view this page</p>
+            </div>
         </div>
     )
 }

@@ -4,13 +4,11 @@ function Home() {
     const auth = useAuthSession();
 
     return (
-        <div>
-            Hello {auth.connectedUser.firstName + " " + auth.connectedUser.lastName}
-            <br></br>
-            Your email is: {auth.connectedUser.email} in the backend
-            <br></br>
-            You are {auth.connectedUser.roles.includes("LOKIT_ADMIN") ? "" : "NOT"} an admin
-            <button onClick={() => void auth.logout()}>Log out</button>
+        <div className="hero">
+            <div className="hero-body">
+                <p className="title">Hello {auth.connectedUser.firstName} {auth.connectedUser.lastName}!</p>
+                <p className="subtitle">Please use the menu on the left to navigate to the appropriate dashboard</p>
+            </div>
         </div>
     )
 }
