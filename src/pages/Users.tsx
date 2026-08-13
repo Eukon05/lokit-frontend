@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getIdPAllUsers } from "../service/UserService";
 import useAuthSession from "../hooks/useAuthSession";
+import SearchableList from "../components/SearchableList";
 import type { UserResponse } from "../types/responses/UserResponse";
 
 function Users() {
@@ -30,31 +31,24 @@ function Users() {
         };
     }, [auth.connectedUser.accessToken])
 
-    const userBlocks = users.length === 0 ? (
-        <div className="panel-block">
-            <span>No users loaded yet</span>
-        </div>
-    ) : (
-        users.filter(user => user.firstName.toLowerCase().includes(query.toLowerCase()) || user.lastName.toLowerCase().includes(query.toLowerCase()))
+    const userBlocks = users.filter(user => user.firstName.toLowerCase().includes(query.toLowerCase()) || user.lastName.toLowerCase().includes(query.toLowerCase()))
         .map(user => (
             <div className="panel-block" key={user.id}>
                 <a>{user.firstName} {user.lastName}</a>
             </div>
-        ))
-    );
+        ));
 
     return (
         <div className="columns">
             <div className="column is-4">
-                <div className="panel is-primary">
-                    <p className="panel-heading">User list</p>
-                    <div className="panel-block">
-                        <input className="input" type="text" onChange={e => setQuery(e.target.value)} placeholder="Search for users..." />
-                    </div>
-                    <div>
-                        {userBlocks}
-                    </div>
-                </div>
+                <SearchableList
+                    title="User list"
+                    query={query}
+                    onQueryChange={setQuery}
+                    emptyText="No matching users found"
+                >
+                    {userBlocks}
+                </SearchableList>
             </div>
             <div className="column">
                 <div className="block">
