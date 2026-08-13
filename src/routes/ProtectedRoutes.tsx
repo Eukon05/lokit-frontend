@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { Outlet } from "react-router";
 import { withAuthenticationRequired } from "react-oidc-context";
 import useAuthSession from "../hooks/useAuthSession";
-import NotAuthorized from "../components/NotAuthorized";
+import NotAuthorized from "../pages/NotAuthorized";
 import type { ProtectedRouteProps } from "../types/props/ProtectedRouteProps";
 
 function PrivateRouteComponent({ allowedRoles }: ProtectedRouteProps) {
