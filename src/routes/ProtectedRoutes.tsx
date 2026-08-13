@@ -7,25 +7,19 @@ import type { ProtectedRouteProps } from "../types/props/ProtectedRouteProps";
 
 function PrivateRouteComponent({ allowedRoles }: ProtectedRouteProps) {
     const auth = useAuthSession();
-    const backendUserSaved = useRef(false);
 
     useEffect(() => {
         if (!auth.isAuthenticated) {
-            backendUserSaved.current = false;
             return;
         }
 
-        if (backendUserSaved.current) {
-            return;
-        }
-
-        backendUserSaved.current = true;
         void fetch("/api/v1/identity/me", {
+            method: "POST",
             headers: {
                 "Authorization": "Bearer " + auth.connectedUser.accessToken
             }
         });
-    }, [auth.isAuthenticated, auth.connectedUser.accessToken]);
+    }, [auth.connectedUser.accessToken]);
 
     if (allowedRoles !== undefined && allowedRoles.length > 0) {
         if (!auth.hasAnyRole(allowedRoles)) return <NotAuthorized />

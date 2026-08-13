@@ -4,6 +4,7 @@ import Navbar from './components/Navbar'
 import Menu from './components/Menu'
 import Home from './pages/Home'
 import Users from './pages/Users'
+import Roles from './pages/Roles'
 
 function App() {
     document.body.classList.add('has-navbar-fixed-top')
@@ -19,6 +20,7 @@ function App() {
                             <Route element={<ProtectedRoutes allowedRoles={["LOKIT_ADMIN"]} />}>
                                 <Route path='/' element={<Home />} />
                                 <Route path="/users" element={<Users />} />
+                                <Route path="/roles" element={<Roles />} />
                             </Route>
                         </Routes>
                     </div>

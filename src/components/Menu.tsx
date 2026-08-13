@@ -6,7 +6,7 @@ function Menu(){
             <p className="menu-label">Select dashboard</p>
             <ul className="menu-list">
                 <li><NavLink to="/users">Users and IdP</NavLink></li>
-                <li><a>Roles</a></li>
+                <li><NavLink to="/roles">Roles</NavLink></li>
                 <li><a>Rooms</a></li>
                 <li><a>Cards</a></li>
                 <li><a>Card readers (devices)</a></li>
