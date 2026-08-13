@@ -1,16 +1,15 @@
-// https://medium.com/@richardharding7000/adding-keycloak-authentication-into-react-in-minutes-b55bb59f01d5
-
+import { createContext, useMemo } from "react";
 import { useAuth } from "react-oidc-context";
-import { useMemo } from "react";
 import { jwtDecode } from "jwt-decode";
 import type { AuthSession } from "../types/AuthSession";
+import type { ReactNode } from "react";
 
-export default function useAuthSession() {
+export const AuthSessionContext = createContext<AuthSession | null>(null);
+const roleClaims: string[] = import.meta.env.VITE_OIDC_ROLE_CLAIMS.split(",");
+
+function AuthSessionProvider({ children }: { children: ReactNode }) {
     const auth = useAuth();
-    const roleClaims: string[] = import.meta.env.VITE_OIDC_ROLE_CLAIMS.split(",");
-
-    // Use memo, only need to update AuthSession info when react oidc context auth changes
-    return useMemo(() => {
+    const authSession = useMemo(() => {
 
         const token: string = auth.user?.access_token ?? "";
         const decodedToken: any = token ? jwtDecode(token) : {};
@@ -49,9 +48,19 @@ export default function useAuthSession() {
             login: () => auth.signinRedirect(),
             logout: () => auth.signoutRedirect({
                 post_logout_redirect_uri: window.location.origin
-            })
+            }),
+            hasRole: (role: string) => roles.includes(role),
+            hasAnyRole: (searchRoles: string[]) => searchRoles.some(r => roles.includes(r))
         }
 
         return session;
     }, [auth]);
+
+    return (
+        <AuthSessionContext.Provider value={authSession}>
+            {children}
+        </AuthSessionContext.Provider>
+    );
 }
+
+export default AuthSessionProvider;
