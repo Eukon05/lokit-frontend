@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { Outlet } from "react-router";
 import { withAuthenticationRequired } from "react-oidc-context";
 import useAuthSession from "../hooks/useAuthSession";

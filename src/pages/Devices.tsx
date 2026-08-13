@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { getAllRoles } from "../service/RoleService";
+import { getAllDevices } from "../service/DeviceService";
 import useAuthSession from "../hooks/useAuthSession";
 import SearchableList from "../components/SearchableList";
-import type { RoleResponse } from "../types/responses/role/RoleResponse";
+import type { DeviceResponse } from "../types/responses/device/DeviceResponse";
 
-function Users() {
+function Devices() {
     const auth = useAuthSession();
-    const [roles, setRoles] = useState<RoleResponse[]>([]);
+    const [devices, setDevices] = useState<DeviceResponse[]>([]);
     const [query, setQuery] = useState<string>("");
 
     useEffect(() => {
@@ -14,13 +14,13 @@ function Users() {
 
         async function loadRoles() {
             try {
-                const allRoles = await getAllRoles(auth.connectedUser.accessToken);
+                const allDevices = await getAllDevices(auth.connectedUser.accessToken);
 
                 if (isActive) {
-                    setRoles(allRoles);
+                    setDevices(allDevices);
                 }
             } catch (error) {
-                console.error("Failed to load roles", error);
+                console.error("Failed to load devices", error);
             }
         }
 
@@ -31,11 +31,11 @@ function Users() {
         };
     }, [auth.connectedUser.accessToken])
 
-    const roleBlocks = roles.filter(role => role.name.toLowerCase().includes(query.toLowerCase()) || role.description.toLowerCase().includes(query.toLowerCase()))
+    const deviceBlocks = devices.filter(device => device.name.toLowerCase().includes(query.toLowerCase()) || device.description.toLowerCase().includes(query.toLowerCase()))
         .sort((o, t) => o.name.localeCompare(t.name))
-        .map(role => (
-            <div className="panel-block" key={role.id}>
-                <a>{role.name}</a>
+        .map(device => (
+            <div className="panel-block" key={device.id}>
+                <a>{device.name}</a>
             </div>
         ));
 
@@ -43,21 +43,21 @@ function Users() {
         <div className="columns">
             <div className="column is-4">
                 <SearchableList
-                    title="Role list"
+                    title="Device list"
                     query={query}
                     onQueryChange={setQuery}
-                    emptyText="No matching roles found"
+                    emptyText="No matching devices found"
                 >
-                    {roleBlocks}
+                    {deviceBlocks}
                 </SearchableList>
             </div>
             <div className="column">
                 <div className="block">
-                    <p className="title">Some role view</p>
+                    <p className="title">Some device view</p>
                 </div>
             </div>
         </div>
     )
 }
 
-export default Users;
+export default Devices;

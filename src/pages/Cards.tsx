@@ -1,41 +1,41 @@
 import { useEffect, useState } from "react";
-import { getAllRoles } from "../service/RoleService";
+import { getAllCards } from "../service/CardService";
 import useAuthSession from "../hooks/useAuthSession";
 import SearchableList from "../components/SearchableList";
-import type { RoleResponse } from "../types/responses/role/RoleResponse";
+import type { CardResponse } from "../types/responses/card/CardResponse";
 
-function Users() {
+function Cards() {
     const auth = useAuthSession();
-    const [roles, setRoles] = useState<RoleResponse[]>([]);
+    const [cards, setCards] = useState<CardResponse[]>([]);
     const [query, setQuery] = useState<string>("");
 
     useEffect(() => {
         let isActive = true;
 
-        async function loadRoles() {
+        async function loadCards() {
             try {
-                const allRoles = await getAllRoles(auth.connectedUser.accessToken);
+                const allCards = await getAllCards(auth.connectedUser.accessToken);
 
                 if (isActive) {
-                    setRoles(allRoles);
+                    setCards(allCards);
                 }
             } catch (error) {
-                console.error("Failed to load roles", error);
+                console.error("Failed to load cards", error);
             }
         }
 
-        void loadRoles();
+        void loadCards();
 
         return () => {
             isActive = false;
         };
     }, [auth.connectedUser.accessToken])
 
-    const roleBlocks = roles.filter(role => role.name.toLowerCase().includes(query.toLowerCase()) || role.description.toLowerCase().includes(query.toLowerCase()))
+    const cardBlocks = cards.filter(card => card.id.toLowerCase().includes(query.toLowerCase()) || card.name.toLowerCase().includes(query.toLowerCase()) || card.userId.toLowerCase().includes(query.toLowerCase()))
         .sort((o, t) => o.name.localeCompare(t.name))
-        .map(role => (
-            <div className="panel-block" key={role.id}>
-                <a>{role.name}</a>
+        .map(card => (
+            <div className="panel-block" key={card.id}>
+                <a>{card.name}</a>
             </div>
         ));
 
@@ -43,21 +43,21 @@ function Users() {
         <div className="columns">
             <div className="column is-4">
                 <SearchableList
-                    title="Role list"
+                    title="Card list"
                     query={query}
                     onQueryChange={setQuery}
-                    emptyText="No matching roles found"
+                    emptyText="No matching cards found"
                 >
-                    {roleBlocks}
+                    {cardBlocks}
                 </SearchableList>
             </div>
             <div className="column">
                 <div className="block">
-                    <p className="title">Some role view</p>
+                    <p className="title">Some card view</p>
                 </div>
             </div>
         </div>
     )
 }
 
-export default Users;
+export default Cards;

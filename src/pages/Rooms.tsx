@@ -1,41 +1,41 @@
 import { useEffect, useState } from "react";
-import { getAllRoles } from "../service/RoleService";
+import { getAllRooms } from "../service/RoomService";
 import useAuthSession from "../hooks/useAuthSession";
 import SearchableList from "../components/SearchableList";
-import type { RoleResponse } from "../types/responses/role/RoleResponse";
+import type { RoomResponse } from "../types/responses/room/RoomResponse";
 
-function Users() {
+function Rooms() {
     const auth = useAuthSession();
-    const [roles, setRoles] = useState<RoleResponse[]>([]);
+    const [rooms, setRooms] = useState<RoomResponse[]>([]);
     const [query, setQuery] = useState<string>("");
 
     useEffect(() => {
         let isActive = true;
 
-        async function loadRoles() {
+        async function loadRooms() {
             try {
-                const allRoles = await getAllRoles(auth.connectedUser.accessToken);
+                const allRooms = await getAllRooms(auth.connectedUser.accessToken);
 
                 if (isActive) {
-                    setRoles(allRoles);
+                    setRooms(allRooms);
                 }
             } catch (error) {
-                console.error("Failed to load roles", error);
+                console.error("Failed to load rooms", error);
             }
         }
 
-        void loadRoles();
+        void loadRooms();
 
         return () => {
             isActive = false;
         };
     }, [auth.connectedUser.accessToken])
 
-    const roleBlocks = roles.filter(role => role.name.toLowerCase().includes(query.toLowerCase()) || role.description.toLowerCase().includes(query.toLowerCase()))
+    const roomBlocks = rooms.filter(room => room.name.toLowerCase().includes(query.toLowerCase()) || room.description.toLowerCase().includes(query.toLowerCase()))
         .sort((o, t) => o.name.localeCompare(t.name))
-        .map(role => (
-            <div className="panel-block" key={role.id}>
-                <a>{role.name}</a>
+        .map(room => (
+            <div className="panel-block" key={room.id}>
+                <a>{room.name}</a>
             </div>
         ));
 
@@ -43,21 +43,21 @@ function Users() {
         <div className="columns">
             <div className="column is-4">
                 <SearchableList
-                    title="Role list"
+                    title="Room list"
                     query={query}
                     onQueryChange={setQuery}
-                    emptyText="No matching roles found"
+                    emptyText="No matching rooms found"
                 >
-                    {roleBlocks}
+                    {roomBlocks}
                 </SearchableList>
             </div>
             <div className="column">
                 <div className="block">
-                    <p className="title">Some role view</p>
+                    <p className="title">Some room view</p>
                 </div>
             </div>
         </div>
     )
 }
 
-export default Users;
+export default Rooms;

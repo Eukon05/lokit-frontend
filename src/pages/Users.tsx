@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getIdPAllUsers } from "../service/UserService";
 import useAuthSession from "../hooks/useAuthSession";
 import SearchableList from "../components/SearchableList";
-import type { UserResponse } from "../types/responses/UserResponse";
+import type { UserResponse } from "../types/responses/user/UserResponse";
 
 function Users() {
     const auth = useAuthSession();

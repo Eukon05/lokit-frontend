@@ -9,9 +9,9 @@ function Menu(){
             <ul className="menu-list">
                 <li><NavLink to="/users" className={linkActiveSwitcher}>Users and IdP</NavLink></li>
                 <li><NavLink to="/roles" className={linkActiveSwitcher}>Roles</NavLink></li>
-                <li><a>Rooms</a></li>
-                <li><a>Cards</a></li>
-                <li><a>Card readers (devices)</a></li>
+                <li><NavLink to="/rooms" className={linkActiveSwitcher}>Rooms</NavLink></li>
+                <li><NavLink to="/cards" className={linkActiveSwitcher}>Cards</NavLink></li>
+                <li><NavLink to="/devices" className={linkActiveSwitcher}>Devices (door card readers)</NavLink></li>
             </ul>
         </div>
     )
