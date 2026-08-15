@@ -5,9 +5,9 @@ function Navbar() {
 
     return (
         <div className="navbar is-fixed-top is-link">
-            <div className="navbar-brand">
+            <div className="navbar-brand ">
                 <div className="navbar-item">
-                    <h1 className="title">Lokit</h1>
+                    <h1 className="title has-text-white">Lokit</h1>
                 </div>
             </div>
             <div className="navbar-menu">

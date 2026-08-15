@@ -12,6 +12,8 @@ export async function makeGet<T>(url: string, accessToken: string): Promise<T> {
             throw new Error("Unauthorized!");
         case 200:
             return response.json() as Promise<T>;
+        case 404:
+            throw new Error("Not found!");
         default:
             throw new Error("Unknown code!");
     }

@@ -23,6 +23,7 @@ function App() {
                             <Route element={<ProtectedRoutes allowedRoles={["LOKIT_ADMIN"]} />}>
                                 <Route path='/' element={<Home />} />
                                 <Route path="/users" element={<Users />} />
+                                <Route path="/users/:userId" element={<Users />} />
                                 <Route path="/roles" element={<Roles />} />
                                 <Route path="/rooms" element={<Rooms />} />
                                 <Route path="/cards" element={<Cards />} />
