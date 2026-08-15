@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
+import { NavLink, useParams } from "react-router";
 import { getAllRoles } from "../service/RoleService";
 import useAuthSession from "../hooks/useAuthSession";
 import SearchableList from "../components/SearchableList";
 import type { RoleResponse } from "../types/responses/role/RoleResponse";
+import RoleDetails from "../components/RoleDetails";
 
-function Users() {
+function Roles() {
     const auth = useAuthSession();
+    const { roleId } = useParams();
     const [roles, setRoles] = useState<RoleResponse[]>([]);
     const [query, setQuery] = useState<string>("");
 
@@ -35,9 +38,15 @@ function Users() {
         .sort((o, t) => o.name.localeCompare(t.name))
         .map(role => (
             <div className="panel-block" key={role.id}>
-                <a>{role.name}</a>
+                <NavLink to={"/roles/" + role.id}>{role.name}</NavLink>
             </div>
         ));
+
+    const roleView = roleId ? <RoleDetails roleId={roleId} /> : (
+        <div className="block">
+            <p className="title has-text-centered">Select a role to view details</p>
+        </div>
+    )
 
     return (
         <div className="columns">
@@ -52,12 +61,10 @@ function Users() {
                 </SearchableList>
             </div>
             <div className="column">
-                <div className="block">
-                    <p className="title">Some role view</p>
-                </div>
+                {roleView}
             </div>
         </div>
     )
 }
 
-export default Users;
+export default Roles;

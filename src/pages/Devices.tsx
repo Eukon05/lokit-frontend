@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
+import { NavLink, useParams } from "react-router";
 import { getAllDevices } from "../service/DeviceService";
 import useAuthSession from "../hooks/useAuthSession";
 import SearchableList from "../components/SearchableList";
 import type { DeviceResponse } from "../types/responses/device/DeviceResponse";
+import DeviceDetails from "../components/DeviceDetails";
 
 function Devices() {
     const auth = useAuthSession();
+    const { deviceId } = useParams();
     const [devices, setDevices] = useState<DeviceResponse[]>([]);
     const [query, setQuery] = useState<string>("");
 
@@ -31,13 +34,19 @@ function Devices() {
         };
     }, [auth.connectedUser.accessToken])
 
-    const deviceBlocks = devices.filter(device => device.name.toLowerCase().includes(query.toLowerCase()) || device.description.toLowerCase().includes(query.toLowerCase()))
+    const deviceBlocks = devices.filter(device => device.name.toLowerCase().includes(query.toLowerCase()) || device.description.toLowerCase().includes(query.toLowerCase()) || device.physicalAddress.toLowerCase().includes(query.toLowerCase()) || device.roomId.toLowerCase().includes(query.toLowerCase()))
         .sort((o, t) => o.name.localeCompare(t.name))
         .map(device => (
             <div className="panel-block" key={device.id}>
-                <a>{device.name}</a>
+                <NavLink to={"/devices/" + device.id}>{device.name}</NavLink>
             </div>
         ));
+
+    const deviceView = deviceId ? <DeviceDetails deviceId={deviceId} /> : (
+        <div className="block">
+            <p className="title has-text-centered">Select a device to view details</p>
+        </div>
+    )
 
     return (
         <div className="columns">
@@ -52,9 +61,7 @@ function Devices() {
                 </SearchableList>
             </div>
             <div className="column">
-                <div className="block">
-                    <p className="title">Some device view</p>
-                </div>
+                {deviceView}
             </div>
         </div>
     )

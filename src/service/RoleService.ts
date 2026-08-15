@@ -3,7 +3,12 @@ import type { RoleResponse } from "../types/responses/role/RoleResponse";
 import type { RolePageResponse } from "../types/responses/role/RolePageResponse";
 
 const ALL_ROLES_ENDPOINT = "/api/v1/role"
+const ROLE_ENDPOINT = "/api/v1/role"
 
 export async function getAllRoles(accessToken: string): Promise<RoleResponse[]> {
     return (await makeGet<RolePageResponse>(SERVER_URL + ALL_ROLES_ENDPOINT, accessToken)).content;
+}
+
+export async function getRole(roleId: string, accessToken: string): Promise<RoleResponse> {
+    return (await makeGet<RoleResponse>(SERVER_URL + ROLE_ENDPOINT + "/" + roleId, accessToken));
 }
