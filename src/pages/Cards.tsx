@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
+import { NavLink, useParams } from "react-router";
 import { getAllCards } from "../service/CardService";
 import useAuthSession from "../hooks/useAuthSession";
 import SearchableList from "../components/SearchableList";
 import type { CardResponse } from "../types/responses/card/CardResponse";
+import CardDetails from "../components/CardDetails";
 
 function Cards() {
     const auth = useAuthSession();
+    const { cardId } = useParams();
     const [cards, setCards] = useState<CardResponse[]>([]);
     const [query, setQuery] = useState<string>("");
 
@@ -35,9 +38,15 @@ function Cards() {
         .sort((o, t) => o.name.localeCompare(t.name))
         .map(card => (
             <div className="panel-block" key={card.id}>
-                <a>{card.name}</a>
+                <NavLink to={"/cards/" + card.id}>{card.name}</NavLink>
             </div>
         ));
+
+    const cardView = cardId ? <CardDetails cardId={cardId} /> : (
+        <div className="block">
+            <p className="title has-text-centered">Select a card to view details</p>
+        </div>
+    )
 
     return (
         <div className="columns">
@@ -52,9 +61,7 @@ function Cards() {
                 </SearchableList>
             </div>
             <div className="column">
-                <div className="block">
-                    <p className="title">Some card view</p>
-                </div>
+                {cardView}
             </div>
         </div>
     )
