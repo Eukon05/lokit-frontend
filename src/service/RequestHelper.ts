@@ -1,20 +1,46 @@
 export const SERVER_URL: string = import.meta.env.VITE_LOKIT_SERVER_URL;
 
+function _handleResponseStatus(responseStatus: number){
+    switch (responseStatus) {
+        case 401:
+            throw new Error("Unauthenticated!");
+        case 403:
+            throw new Error("Unauthorized!");
+        case 404:
+            throw new Error("Not found!");
+        case 200:
+        case 201:
+            return;
+        default:
+            throw new Error("Unknown code!");
+    }
+}
+
 export async function makeGet<T>(url: string, accessToken: string): Promise<T> {
     const response = await fetch(url, {
         headers: { Authorization: "Bearer " + accessToken }
     });
 
-    switch (response.status) {
-        case 401:
-            throw new Error("Unauthenticated!");
-        case 403:
-            throw new Error("Unauthorized!");
-        case 200:
-            return response.json() as Promise<T>;
-        case 404:
-            throw new Error("Not found!");
-        default:
-            throw new Error("Unknown code!");
-    }
+    _handleResponseStatus(response.status);
+    return response.json() as Promise<T>;
+}
+
+export async function makeDelete(url: string, accessToken: string): Promise<void>{
+    const response = await fetch(url, {
+        headers: { Authorization: "Bearer " + accessToken },
+        method: "DELETE"
+    });
+
+    _handleResponseStatus(response.status);
+}
+
+export async function makePost<T, U>(url: string, requestBody: T, accessToken: string): Promise<U>{
+    const response = await fetch(url, {
+        headers: { Authorization: "Bearer " + accessToken },
+        body: JSON.stringify(requestBody),
+        method: "POST"
+    });
+
+    _handleResponseStatus(response.status);
+    return response.json() as Promise<U>;
 }
