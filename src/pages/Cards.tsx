@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { NavLink, useParams } from "react-router";
+import { NavLink, useLocation, useParams } from "react-router";
 import { getAllCards } from "../service/CardService";
 import useAuthSession from "../hooks/useAuthSession";
 import SearchableList from "../components/SearchableList";
@@ -8,6 +8,7 @@ import CardDetails from "../components/CardDetails";
 
 function Cards() {
     const auth = useAuthSession();
+    const location = useLocation();
     const { cardId } = useParams();
     const [cards, setCards] = useState<CardResponse[]>([]);
     const [query, setQuery] = useState<string>("");
@@ -32,7 +33,7 @@ function Cards() {
         return () => {
             isActive = false;
         };
-    }, [auth.connectedUser.accessToken])
+    }, [auth.connectedUser.accessToken, location.state?.refreshCards])
 
     const cardBlocks = cards.filter(card => card.id.toLowerCase().includes(query.toLowerCase()) || card.name.toLowerCase().includes(query.toLowerCase()) || card.userId.toLowerCase().includes(query.toLowerCase()))
         .sort((o, t) => o.name.localeCompare(t.name))

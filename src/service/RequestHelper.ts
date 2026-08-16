@@ -42,5 +42,6 @@ export async function makePost<T, U>(url: string, requestBody: T, accessToken: s
     });
 
     _handleResponseStatus(response.status);
-    return response.json() as Promise<U>;
+    const val = await response.text();
+    return (val ? JSON.parse(val) : undefined) as Promise<U>
 }

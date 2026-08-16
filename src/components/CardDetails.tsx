@@ -1,16 +1,47 @@
 import { useState, useEffect } from "react";
-import { getCard } from "../service/CardService";
+import { deleteCard, disableCard, enableCard, getCard } from "../service/CardService";
 import { getUser } from "../service/UserService";
 import type { CardDetailsProps } from "../types/props/CardDetailsProps";
 import useAuthSession from "../hooks/useAuthSession";
 import type { CardResponse } from "../types/responses/card/CardResponse";
 import type { UserResponse } from "../types/responses/user/UserResponse";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 
 function CardDetails({ cardId }: CardDetailsProps) {
     const auth = useAuthSession();
+    const navigate = useNavigate();
     const [cardDetails, setCardDetails] = useState<CardResponse>();
     const [userDetails, setUserDetails] = useState<UserResponse>();
+
+    async function _handleEnable() {
+        try {
+            await enableCard(cardId, auth.connectedUser.accessToken);
+            setCardDetails((previous) => previous ? { ...previous, active: true } : previous);
+        }
+        catch (error) {
+            console.error("Failed to enable card " + cardId, error);
+        }
+    }
+
+    async function _handleDisable() {
+        try {
+            await disableCard(cardId, auth.connectedUser.accessToken);
+            setCardDetails((previous) => previous ? { ...previous, active: false } : previous);
+        }
+        catch (error) {
+            console.error("Failed to disable card " + cardId, error);
+        }
+    }
+
+    async function _handleDelete() {
+        try {
+            await deleteCard(cardId, auth.connectedUser.accessToken);
+            navigate("/cards", { replace: true, state: { refreshCards: Date.now() } });
+        }
+        catch (error) {
+            console.error("Failed to delete card " + cardId, error);
+        }
+    }
 
     useEffect(() => {
         let isActive = true;
@@ -48,8 +79,8 @@ function CardDetails({ cardId }: CardDetailsProps) {
                             <span className={tagStyle}>{cardDetails.active ? "Active" : "Disabled"}</span>
                         </div>
                         <div style={{ float: "right" }}>
-                            <button className="button is-warning mr-1">Disable</button>
-                            <button className="button is-danger">Delete</button>
+                            <button className="button is-warning mr-1" onClick={cardDetails.active ? _handleDisable : _handleEnable}>{cardDetails.active ? "Disable" : "Enable"}</button>
+                            <button className="button is-danger" onClick={_handleDelete}>Delete</button>
                         </div>
                     </div>
                     <div>

@@ -10,17 +10,17 @@ export async function getAllCards(accessToken: string): Promise<CardResponse[]> 
 }
 
 export async function getCard(cardId: string, accessToken: string): Promise<CardResponse> {
-    return (await makeGet<CardResponse>(SERVER_URL + CARD_ENDPOINT + '/' + cardId, accessToken));
+    return (await makeGet<CardResponse>(SERVER_URL + CARD_ENDPOINT + cardId, accessToken));
 }
 
 export async function deleteCard(cardId: string, accessToken: string): Promise<void> {
-    await makeDelete(CARD_ENDPOINT + '/' + cardId, accessToken);
+    await makeDelete(SERVER_URL + CARD_ENDPOINT + cardId, accessToken);
 }
 
 export async function enableCard(cardId: string, accessToken: string): Promise<void> {
-    await makePost<null, void>(CARD_ENDPOINT + '/' + cardId + "/enable", null, accessToken);
+    await makePost<null, void>(SERVER_URL + CARD_ENDPOINT + cardId + "/enable", null, accessToken);
 }
 
 export async function disableCard(cardId: string, accessToken: string): Promise<void> {
-    await makePost<null, void>(CARD_ENDPOINT + '/' + cardId + "/disable", null, accessToken);
+    await makePost<null, void>(SERVER_URL + CARD_ENDPOINT + cardId + "/disable", null, accessToken);
 }
