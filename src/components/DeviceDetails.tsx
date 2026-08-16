@@ -12,11 +12,13 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
     const navigate = useNavigate();
     const [deviceDetails, setDeviceDetails] = useState<DeviceResponse>();
     const [roomDetails, setRoomDetails] = useState<RoomResponse>();
+    const [deviceToken, setDeviceToken] = useState<string>();
 
     async function _handleAssignToken() {
         try {
-            await assignToken(deviceId, auth.connectedUser.accessToken);
+            const token = await assignToken(deviceId, auth.connectedUser.accessToken);
             setDeviceDetails((previous) => previous ? { ...previous, hasActiveToken: true } : previous);
+            setDeviceToken(token);
         }
         catch (error) {
             console.error("Failed to enable device " + deviceId, error);
@@ -27,6 +29,7 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
         try {
             await removeToken(deviceId, auth.connectedUser.accessToken);
             setDeviceDetails((previous) => previous ? { ...previous, hasActiveToken: false } : previous);
+            setDeviceToken(undefined);
         }
         catch (error) {
             console.error("Failed to disable device " + deviceId, error);
@@ -72,6 +75,17 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
     const tagStyle = "tag" + (deviceDetails?.hasActiveToken ? " is-success" : " is-danger");
     const tagText = deviceDetails?.hasActiveToken ? "Active" : "Disabled";
 
+    const deviceTokenDiv = deviceToken && <div className="message">
+        <br/>
+        <div className="message-header">
+            <p>Device token</p>
+        </div>
+        <div className="message-body is-flex is-flex-direction-row is-justify-content-space-between">
+            <p>{deviceToken}</p>
+            <button className="button" onClick={() => navigator.clipboard.writeText(deviceToken)}>Copy</button>
+        </div>
+    </div>
+
     const render = deviceDetails ? (
         <div className="card">
             <div className="card-content">
@@ -92,6 +106,7 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
                         <p>Physical address: {deviceDetails.physicalAddress}</p>
                         <p>Belongs to room: {hasAssignedRoom ? (<NavLink to={"/rooms/" + roomDetails?.id}>{roomDetails?.name}</NavLink>) : "None"}</p>
                     </div>
+                    {deviceTokenDiv}
                 </div>
             </div>
         </div>
