@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { NavLink, useParams } from "react-router";
+import { NavLink, useLocation, useParams } from "react-router";
 import { getAllRoles } from "../service/RoleService";
 import useAuthSession from "../hooks/useAuthSession";
 import SearchableList from "../components/SearchableList";
@@ -8,6 +8,7 @@ import RoleDetails from "../components/RoleDetails";
 
 function Roles() {
     const auth = useAuthSession();
+    const location = useLocation();
     const { roleId } = useParams();
     const [roles, setRoles] = useState<RoleResponse[]>([]);
     const [query, setQuery] = useState<string>("");
@@ -32,7 +33,7 @@ function Roles() {
         return () => {
             isActive = false;
         };
-    }, [auth.connectedUser.accessToken])
+    }, [auth.connectedUser.accessToken, location.state?.refreshRoles])
 
     const roleBlocks = roles.filter(role => role.name.toLowerCase().includes(query.toLowerCase()) || role.description.toLowerCase().includes(query.toLowerCase()))
         .sort((o, t) => o.name.localeCompare(t.name))

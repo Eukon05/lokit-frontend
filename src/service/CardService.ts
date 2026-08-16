@@ -18,9 +18,9 @@ export async function deleteCard(cardId: string, accessToken: string): Promise<v
 }
 
 export async function enableCard(cardId: string, accessToken: string): Promise<void> {
-    await makePost<null, void>(SERVER_URL + CARD_ENDPOINT + cardId + "/enable", null, accessToken);
+    await makePost<null>(SERVER_URL + CARD_ENDPOINT + cardId + "/enable", null, accessToken);
 }
 
 export async function disableCard(cardId: string, accessToken: string): Promise<void> {
-    await makePost<null, void>(SERVER_URL + CARD_ENDPOINT + cardId + "/disable", null, accessToken);
+    await makePost<null>(SERVER_URL + CARD_ENDPOINT + cardId + "/disable", null, accessToken);
 }

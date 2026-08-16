@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { NavLink, useParams } from "react-router";
+import { NavLink, useLocation, useParams } from "react-router";
 import { getAllDevices } from "../service/DeviceService";
 import useAuthSession from "../hooks/useAuthSession";
 import SearchableList from "../components/SearchableList";
@@ -8,6 +8,7 @@ import DeviceDetails from "../components/DeviceDetails";
 
 function Devices() {
     const auth = useAuthSession();
+    const location = useLocation();
     const { deviceId } = useParams();
     const [devices, setDevices] = useState<DeviceResponse[]>([]);
     const [query, setQuery] = useState<string>("");
@@ -32,7 +33,7 @@ function Devices() {
         return () => {
             isActive = false;
         };
-    }, [auth.connectedUser.accessToken])
+    }, [auth.connectedUser.accessToken, location.state?.refreshDevices])
 
     const deviceBlocks = devices.filter(device => device.name.toLowerCase().includes(query.toLowerCase()) || device.description.toLowerCase().includes(query.toLowerCase()) || device.physicalAddress.toLowerCase().includes(query.toLowerCase()) || device.roomId.toLowerCase().includes(query.toLowerCase()))
         .sort((o, t) => o.name.localeCompare(t.name))

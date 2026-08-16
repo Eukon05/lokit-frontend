@@ -1,12 +1,44 @@
 import { useState, useEffect } from "react";
-import { getRole } from "../service/RoleService";
+import { deleteRole, disableRole, enableRole, getRole } from "../service/RoleService";
 import type { RoleDetailsProps } from "../types/props/RoleDetailsProps";
 import type { RoleResponse } from "../types/responses/role/RoleResponse";
 import useAuthSession from "../hooks/useAuthSession";
+import { useNavigate } from "react-router";
 
 function RoleDetails({ roleId }: RoleDetailsProps) {
     const auth = useAuthSession();
+    const navigate = useNavigate();
     const [roleDetails, setRoleDetails] = useState<RoleResponse>();
+
+    async function _handleEnable() {
+        try {
+            await enableRole(roleId, auth.connectedUser.accessToken);
+            setRoleDetails((previous) => previous ? { ...previous, active: true } : previous);
+        }
+        catch (error) {
+            console.error("Failed to enable role " + roleId, error);
+        }
+    }
+
+    async function _handleDisable() {
+        try {
+            await disableRole(roleId, auth.connectedUser.accessToken);
+            setRoleDetails((previous) => previous ? { ...previous, active: false } : previous);
+        }
+        catch (error) {
+            console.error("Failed to disable role " + roleId, error);
+        }
+    }
+
+    async function _handleDelete() {
+        try {
+            await deleteRole(roleId, auth.connectedUser.accessToken);
+            navigate("/roles", { replace: true, state: { refreshRoles: Date.now() } });
+        }
+        catch (error) {
+            console.error("Failed to delete role " + roleId, error);
+        }
+    }
 
     useEffect(() => {
         let isActive = true;
@@ -42,8 +74,8 @@ function RoleDetails({ roleId }: RoleDetailsProps) {
                             <span className={tagStyle}>{roleDetails.active ? "Active" : "Disabled"}</span>
                         </div>
                         <div style={{ float: "right" }}>
-                            <button className="button is-warning mr-1">Disable</button>
-                            <button className="button is-danger">Delete</button>
+                            <button className="button is-warning mr-1" onClick={roleDetails.active ? _handleDisable : _handleEnable}>{roleDetails.active ? "Disable" : "Enable"}</button>
+                            <button className="button is-danger" onClick={_handleDelete}>Delete</button>
                         </div>
                     </div>
                     <p>{roleDetails.description}</p>

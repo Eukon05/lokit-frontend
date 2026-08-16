@@ -1,16 +1,47 @@
 import { useState, useEffect } from "react";
-import { getDevice } from "../service/DeviceService";
+import { deleteDevice, removeToken, assignToken, getDevice } from "../service/DeviceService";
 import { getRoom } from "../service/RoomService";
 import type { DeviceDetailsProps } from "../types/props/DeviceDetailsProps";
 import type { DeviceResponse } from "../types/responses/device/DeviceResponse";
 import type { RoomResponse } from "../types/responses/room/RoomResponse";
 import useAuthSession from "../hooks/useAuthSession";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 
 function DeviceDetails({ deviceId }: DeviceDetailsProps) {
     const auth = useAuthSession();
+    const navigate = useNavigate();
     const [deviceDetails, setDeviceDetails] = useState<DeviceResponse>();
     const [roomDetails, setRoomDetails] = useState<RoomResponse>();
+
+    async function _handleAssignToken() {
+        try {
+            await assignToken(deviceId, auth.connectedUser.accessToken);
+            setDeviceDetails((previous) => previous ? { ...previous, hasActiveToken: true } : previous);
+        }
+        catch (error) {
+            console.error("Failed to enable device " + deviceId, error);
+        }
+    }
+
+    async function _handleRemoveToken() {
+        try {
+            await removeToken(deviceId, auth.connectedUser.accessToken);
+            setDeviceDetails((previous) => previous ? { ...previous, hasActiveToken: false } : previous);
+        }
+        catch (error) {
+            console.error("Failed to disable device " + deviceId, error);
+        }
+    }
+
+    async function _handleDelete() {
+        try {
+            await deleteDevice(deviceId, auth.connectedUser.accessToken);
+            navigate("/devices", { replace: true, state: { refreshDevices: Date.now() } });
+        }
+        catch (error) {
+            console.error("Failed to delete device " + deviceId, error);
+        }
+    }
 
     useEffect(() => {
         let isActive = true;
@@ -38,12 +69,8 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
     }, [deviceId])
 
     const hasAssignedRoom = Boolean(deviceDetails?.roomId && deviceDetails.roomId.trim().length > 0);
-    const tagStyle = !hasAssignedRoom
-        ? "tag has-background-grey-light has-text-grey-dark"
-        : "tag" + (deviceDetails?.hasActiveToken ? " is-success" : " is-danger");
-    const tagText = !hasAssignedRoom
-        ? "Unassigned"
-        : (deviceDetails?.hasActiveToken ? "Active" : "Disabled");
+    const tagStyle = "tag" + (deviceDetails?.hasActiveToken ? " is-success" : " is-danger");
+    const tagText = deviceDetails?.hasActiveToken ? "Active" : "Disabled";
 
     const render = deviceDetails ? (
         <div className="card">
@@ -55,8 +82,8 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
                             <span className={tagStyle}>{tagText}</span>
                         </div>
                         <div style={{ float: "right" }}>
-                            <button className="button is-warning mr-1">Disable</button>
-                            <button className="button is-danger">Delete</button>
+                            <button className="button is-warning mr-1" onClick={deviceDetails.hasActiveToken ? _handleRemoveToken : _handleAssignToken}>{deviceDetails.hasActiveToken ? "Revoke token" : "Assign token"}</button>
+                            <button className="button is-danger" onClick={_handleDelete}>Delete</button>
                         </div>
                     </div>
                     <div>
