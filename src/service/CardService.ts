@@ -34,5 +34,5 @@ export async function lookupCards(dto: LookupCardsRequest, accessToken: string):
 }
 
 export async function getUserCards(userId: string, accessToken: string): Promise<UserCardsResponse>{
-     return (await makeGet<UserCardsResponse>(SERVER_URL + USER_ENDPOINT + userId, accessToken));
+     return (await makeGet<UserCardsResponse>(SERVER_URL + USER_ENDPOINT + userId + "/cards", accessToken));
 }

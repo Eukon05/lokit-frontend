@@ -34,5 +34,5 @@ export async function lookupRoles(dto: LookupRolesRequest, accessToken: string):
 }
 
 export async function getUserRoles(userId: string, accessToken: string): Promise<UserRolesResponse>{
-    return (await makeGet<UserRolesResponse>(SERVER_URL + USER_ENDPOINT + userId, accessToken));
+    return (await makeGet<UserRolesResponse>(SERVER_URL + USER_ENDPOINT + userId + "/roles", accessToken));
 }
