@@ -36,9 +36,9 @@ export async function makeDelete(url: string, accessToken: string): Promise<void
 
 export async function makePost<T>(url: string, requestBody: T, accessToken: string): Promise<string>{
     const response = await fetch(url, {
-        headers: { Authorization: "Bearer " + accessToken },
+        headers: { "Authorization": "Bearer " + accessToken, "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
-        method: "POST"
+        method: "POST",
     });
 
     _handleResponseStatus(response.status);
