@@ -80,6 +80,9 @@ function RoleDetails({ roleId }: RoleDetailsProps) {
                     </div>
                     <p>{roleDetails.description}</p>
                 </div>
+                <br />
+                <p>Created at: {new Date(roleDetails.createdAt).toUTCString()}</p>
+                <p>Updated at: {new Date(roleDetails.updatedAt).toUTCString()}</p>
             </div>
         </div>
     ) :

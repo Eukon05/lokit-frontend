@@ -3,6 +3,6 @@ export type RoleResponse = {
     name: string,
     description: string,
     active: boolean,
-    createdAt: EpochTimeStamp,
-    updatedAt: EpochTimeStamp
+    createdAt: string,
+    updatedAt: string
 };
