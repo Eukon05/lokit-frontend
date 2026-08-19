@@ -10,5 +10,5 @@ export async function getIdPAllUsers(accessToken: string): Promise<UserResponse[
 }
 
 export async function getUser(userId: string, accessToken: string): Promise<UserResponse> {
-    return (await makeGet<UserResponse>(SERVER_URL + IDP_USER_ENDPOINT + '/' + userId, accessToken));
+    return (await makeGet<UserResponse>(SERVER_URL + IDP_USER_ENDPOINT + userId, accessToken));
 }
