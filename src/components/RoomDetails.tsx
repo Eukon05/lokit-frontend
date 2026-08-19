@@ -1,0 +1,115 @@
+import { useState, useEffect } from "react";
+
+import useAuthSession from "../hooks/useAuthSession";
+import { NavLink, useNavigate } from "react-router";
+import type { RoomDetailsProps } from "../types/props/RoomDetailsProps";
+import type { RoomResponse } from "../types/responses/room/RoomResponse";
+import { deleteRoom, disableRoom, enableRoom, getRoom } from "../service/RoomService";
+import type { RoleResponse } from "../types/responses/role/RoleResponse";
+import { lookupRoles } from "../service/RoleService";
+
+function RoomDetails({ roomId }: RoomDetailsProps) {
+    const auth = useAuthSession();
+    const navigate = useNavigate();
+    const [roomDetails, setRoomDetails] = useState<RoomResponse>();
+    const [roomRoles, setRoomRoles] = useState<RoleResponse[]>();
+
+    async function _handleEnable() {
+        try {
+            await enableRoom(roomId, auth.connectedUser.accessToken);
+            setRoomDetails((previous) => previous ? { ...previous, active: true } : previous);
+        }
+        catch (error) {
+            console.error("Failed to enable room " + roomId, error);
+        }
+    }
+
+    async function _handleDisable() {
+        try {
+            await disableRoom(roomId, auth.connectedUser.accessToken);
+            setRoomDetails((previous) => previous ? { ...previous, active: false } : previous);
+        }
+        catch (error) {
+            console.error("Failed to disable room " + roomId, error);
+        }
+    }
+
+    async function _handleDelete() {
+        try {
+            await deleteRoom(roomId, auth.connectedUser.accessToken);
+            navigate("/rooms", { replace: true, state: { refreshRooms: Date.now() } });
+        }
+        catch (error) {
+            console.error("Failed to delete room " + roomId, error);
+        }
+    }
+
+    useEffect(() => {
+        let isActive = true;
+
+        async function loadRole() {
+            try {
+                const room = await getRoom(roomId, auth.connectedUser.accessToken);
+
+                const fetchedRoles = room.acl.length > 0
+                                    ? await lookupRoles({ roleIds: room.acl }, auth.connectedUser.accessToken)
+                                    : [];
+
+                if (isActive) {
+                    setRoomDetails(room);
+                    setRoomRoles(fetchedRoles);
+                }
+            } catch (error) {
+                console.error("Failed to load room " + roomId, error);
+            }
+        }
+
+        void loadRole();
+
+        return () => {
+            isActive = false;
+        };
+    }, [roomId])
+
+    const tagStyle = "tag" + (roomDetails?.active ? " is-success" : " is-danger");
+
+    const roleBlocks = roomRoles && roomRoles.length > 0 ? roomRoles.map((role) => (
+        <button key={role.id} className="button is-small is-outlined is-link is-rounded">
+            <NavLink to={"/roles/" + role.id}>{role.name}</NavLink>
+        </button>
+    )) : (<p className="subtitle is-7"> The room does not allow anyone to enter it</p>);
+
+    const render = roomDetails ? (
+        <div className="card">
+            <div className="card-content">
+                <div className="media-content">
+                    <div className="is-flex is-flex-wrap-wrap is-flex-direction-row is-justify-content-space-between">
+                        <div>
+                            <span className="mr-3 title is-4">{roomDetails.name}</span>
+                            <span className={tagStyle}>{roomDetails.active ? "Active" : "Disabled"}</span>
+                        </div>
+                        <div style={{ float: "right" }}>
+                            <button className="button is-warning mr-1" onClick={roomDetails.active ? _handleDisable : _handleEnable}>{roomDetails.active ? "Disable" : "Enable"}</button>
+                            <button className="button is-danger" onClick={_handleDelete}>Delete</button>
+                        </div>
+                    </div>
+                    <p>{roomDetails.description}</p>
+                </div>
+                <br />
+                <div>
+                    <p className="title is-6">Roles</p>
+                    {roleBlocks}
+                </div>
+            </div>
+        </div>
+    ) :
+        (
+            <div>
+                <p className="title has-text-centered">Room not found</p>
+            </div>
+        )
+
+    return render;
+}
+
+export default RoomDetails;
