@@ -7,10 +7,12 @@ import type { RoomResponse } from "../types/responses/room/RoomResponse";
 import { deleteRoom, disableRoom, enableRoom, getRoom } from "../service/RoomService";
 import type { RoleResponse } from "../types/responses/role/RoleResponse";
 import { lookupRoles } from "../service/RoleService";
+import ConfirmationModal from "./ConfirmationModal";
 
 function RoomDetails({ roomId }: RoomDetailsProps) {
     const auth = useAuthSession();
     const navigate = useNavigate();
+    const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
     const [roomDetails, setRoomDetails] = useState<RoomResponse>();
     const [roomRoles, setRoomRoles] = useState<RoleResponse[]>();
 
@@ -52,8 +54,8 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
                 const room = await getRoom(roomId, auth.connectedUser.accessToken);
 
                 const fetchedRoles = room.acl.length > 0
-                                    ? await lookupRoles({ roleIds: room.acl }, auth.connectedUser.accessToken)
-                                    : [];
+                    ? await lookupRoles({ roleIds: room.acl }, auth.connectedUser.accessToken)
+                    : [];
 
                 if (isActive) {
                     setRoomDetails(room);
@@ -80,26 +82,31 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
     )) : (<p className="subtitle is-7"> The room does not allow anyone to enter it</p>);
 
     const render = roomDetails ? (
-        <div className="card">
-            <div className="card-content">
-                <div className="media-content">
-                    <div className="is-flex is-flex-wrap-wrap is-flex-direction-row is-justify-content-space-between">
-                        <div>
-                            <span className="mr-3 title is-4">{roomDetails.name}</span>
-                            <span className={tagStyle}>{roomDetails.active ? "Active" : "Disabled"}</span>
+        <div>
+            <div className="card">
+                <div className="card-content">
+                    <div className="media-content">
+                        <div className="is-flex is-flex-wrap-wrap is-flex-direction-row is-justify-content-space-between">
+                            <div>
+                                <span className="mr-3 title is-4">{roomDetails.name}</span>
+                                <span className={tagStyle}>{roomDetails.active ? "Active" : "Disabled"}</span>
+                            </div>
+                            <div style={{ float: "right" }}>
+                                <button className="button is-warning mr-1" onClick={roomDetails.active ? _handleDisable : _handleEnable}>{roomDetails.active ? "Disable" : "Enable"}</button>
+                                <button className="button is-danger" onClick={() => setShowDeleteModal(true)}>Delete</button>
+                            </div>
                         </div>
-                        <div style={{ float: "right" }}>
-                            <button className="button is-warning mr-1" onClick={roomDetails.active ? _handleDisable : _handleEnable}>{roomDetails.active ? "Disable" : "Enable"}</button>
-                            <button className="button is-danger" onClick={_handleDelete}>Delete</button>
-                        </div>
+                        <p>{roomDetails.description}</p>
                     </div>
-                    <p>{roomDetails.description}</p>
+                    <br />
+                    <div>
+                        <p className="title is-6">Roles</p>
+                        {roleBlocks}
+                    </div>
                 </div>
-                <br />
-                <div>
-                    <p className="title is-6">Roles</p>
-                    {roleBlocks}
-                </div>
+            </div>
+            <div>
+                {showDeleteModal && <ConfirmationModal text="Are you sure?" subtext="This action cannot be undone!" onConfirm={_handleDelete} onCancel={() => setShowDeleteModal(false)} />}
             </div>
         </div>
     ) :

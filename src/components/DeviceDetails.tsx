@@ -6,10 +6,12 @@ import type { DeviceResponse } from "../types/responses/device/DeviceResponse";
 import type { RoomResponse } from "../types/responses/room/RoomResponse";
 import useAuthSession from "../hooks/useAuthSession";
 import { NavLink, useNavigate } from "react-router";
+import ConfirmationModal from "./ConfirmationModal";
 
 function DeviceDetails({ deviceId }: DeviceDetailsProps) {
     const auth = useAuthSession();
     const navigate = useNavigate();
+    const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
     const [deviceDetails, setDeviceDetails] = useState<DeviceResponse>();
     const [roomDetails, setRoomDetails] = useState<RoomResponse>();
     const [deviceToken, setDeviceToken] = useState<string>();
@@ -76,7 +78,7 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
     const tagText = deviceDetails?.hasActiveToken ? "Active" : "Disabled";
 
     const deviceTokenDiv = deviceToken && <div className="message">
-        <br/>
+        <br />
         <div className="message-header">
             <p>Device token</p>
         </div>
@@ -87,27 +89,32 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
     </div>
 
     const render = deviceDetails ? (
-        <div className="card">
-            <div className="card-content">
-                <div className="media-content">
-                    <div className="is-flex is-flex-wrap-wrap is-flex-direction-row is-justify-content-space-between">
+        <div>
+            <div className="card">
+                <div className="card-content">
+                    <div className="media-content">
+                        <div className="is-flex is-flex-wrap-wrap is-flex-direction-row is-justify-content-space-between">
+                            <div>
+                                <span className="mr-3 title is-4">{deviceDetails.name}</span>
+                                <span className={tagStyle}>{tagText}</span>
+                            </div>
+                            <div style={{ float: "right" }}>
+                                <button className="button is-warning mr-1" onClick={deviceDetails.hasActiveToken ? _handleRemoveToken : _handleAssignToken}>{deviceDetails.hasActiveToken ? "Revoke token" : "Assign token"}</button>
+                                <button className="button is-danger" onClick={() => setShowDeleteModal(true)}>Delete</button>
+                            </div>
+                        </div>
                         <div>
-                            <span className="mr-3 title is-4">{deviceDetails.name}</span>
-                            <span className={tagStyle}>{tagText}</span>
+                            <p>{deviceDetails.description}</p>
+                            <br />
+                            <p>Physical address: {deviceDetails.physicalAddress}</p>
+                            <p>Belongs to room: {hasAssignedRoom ? (<NavLink to={"/rooms/" + roomDetails?.id}>{roomDetails?.name}</NavLink>) : "None"}</p>
                         </div>
-                        <div style={{ float: "right" }}>
-                            <button className="button is-warning mr-1" onClick={deviceDetails.hasActiveToken ? _handleRemoveToken : _handleAssignToken}>{deviceDetails.hasActiveToken ? "Revoke token" : "Assign token"}</button>
-                            <button className="button is-danger" onClick={_handleDelete}>Delete</button>
-                        </div>
+                        {deviceTokenDiv}
                     </div>
-                    <div>
-                        <p>{deviceDetails.description}</p>
-                        <br />
-                        <p>Physical address: {deviceDetails.physicalAddress}</p>
-                        <p>Belongs to room: {hasAssignedRoom ? (<NavLink to={"/rooms/" + roomDetails?.id}>{roomDetails?.name}</NavLink>) : "None"}</p>
-                    </div>
-                    {deviceTokenDiv}
                 </div>
+            </div>
+            <div>
+                {showDeleteModal && <ConfirmationModal text="Are you sure?" subtext="This action cannot be undone!" onConfirm={_handleDelete} onCancel={() => setShowDeleteModal(false)} />}
             </div>
         </div>
     ) :

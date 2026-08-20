@@ -4,10 +4,12 @@ import type { RoleDetailsProps } from "../types/props/RoleDetailsProps";
 import type { RoleResponse } from "../types/responses/role/RoleResponse";
 import useAuthSession from "../hooks/useAuthSession";
 import { useNavigate } from "react-router";
+import ConfirmationModal from "./ConfirmationModal";
 
 function RoleDetails({ roleId }: RoleDetailsProps) {
     const auth = useAuthSession();
     const navigate = useNavigate();
+    const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
     const [roleDetails, setRoleDetails] = useState<RoleResponse>();
 
     async function _handleEnable() {
@@ -65,24 +67,29 @@ function RoleDetails({ roleId }: RoleDetailsProps) {
     const tagStyle = "tag" + (roleDetails?.active ? " is-success" : " is-danger");
 
     const render = roleDetails ? (
-        <div className="card">
-            <div className="card-content">
-                <div className="media-content">
-                    <div className="is-flex is-flex-wrap-wrap is-flex-direction-row is-justify-content-space-between">
-                        <div>
-                            <span className="mr-3 title is-4">{roleDetails.name}</span>
-                            <span className={tagStyle}>{roleDetails.active ? "Active" : "Disabled"}</span>
+        <div>
+            <div className="card">
+                <div className="card-content">
+                    <div className="media-content">
+                        <div className="is-flex is-flex-wrap-wrap is-flex-direction-row is-justify-content-space-between">
+                            <div>
+                                <span className="mr-3 title is-4">{roleDetails.name}</span>
+                                <span className={tagStyle}>{roleDetails.active ? "Active" : "Disabled"}</span>
+                            </div>
+                            <div style={{ float: "right" }}>
+                                <button className="button is-warning mr-1" onClick={roleDetails.active ? _handleDisable : _handleEnable}>{roleDetails.active ? "Disable" : "Enable"}</button>
+                                <button className="button is-danger" onClick={() => setShowDeleteModal(true)}>Delete</button>
+                            </div>
                         </div>
-                        <div style={{ float: "right" }}>
-                            <button className="button is-warning mr-1" onClick={roleDetails.active ? _handleDisable : _handleEnable}>{roleDetails.active ? "Disable" : "Enable"}</button>
-                            <button className="button is-danger" onClick={_handleDelete}>Delete</button>
-                        </div>
+                        <p>{roleDetails.description}</p>
                     </div>
-                    <p>{roleDetails.description}</p>
+                    <br />
+                    <p>Created at: {new Date(roleDetails.createdAt).toUTCString()}</p>
+                    <p>Updated at: {new Date(roleDetails.updatedAt).toUTCString()}</p>
                 </div>
-                <br />
-                <p>Created at: {new Date(roleDetails.createdAt).toUTCString()}</p>
-                <p>Updated at: {new Date(roleDetails.updatedAt).toUTCString()}</p>
+            </div>
+            <div>
+                {showDeleteModal && <ConfirmationModal text="Are you sure?" subtext="This action cannot be undone!" onConfirm={_handleDelete} onCancel={() => setShowDeleteModal(false)} />}
             </div>
         </div>
     ) :

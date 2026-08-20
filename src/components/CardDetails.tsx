@@ -6,10 +6,12 @@ import useAuthSession from "../hooks/useAuthSession";
 import type { CardResponse } from "../types/responses/card/CardResponse";
 import type { UserResponse } from "../types/responses/user/UserResponse";
 import { NavLink, useNavigate } from "react-router";
+import ConfirmationModal from "./ConfirmationModal";
 
 function CardDetails({ cardId }: CardDetailsProps) {
     const auth = useAuthSession();
     const navigate = useNavigate();
+    const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
     const [cardDetails, setCardDetails] = useState<CardResponse>();
     const [userDetails, setUserDetails] = useState<UserResponse>();
 
@@ -70,27 +72,32 @@ function CardDetails({ cardId }: CardDetailsProps) {
     const tagStyle = "tag" + (cardDetails?.active ? " is-success" : " is-danger");
 
     const render = cardDetails ? (
-        <div className="card">
-            <div className="card-content">
-                <div className="media-content">
-                    <div className="is-flex is-flex-wrap-wrap is-flex-direction-row is-justify-content-space-between">
+        <div>
+            <div className="card">
+                <div className="card-content">
+                    <div className="media-content">
+                        <div className="is-flex is-flex-wrap-wrap is-flex-direction-row is-justify-content-space-between">
+                            <div>
+                                <span className="mr-3 title is-4">{cardDetails?.name}</span>
+                                <span className={tagStyle}>{cardDetails.active ? "Active" : "Disabled"}</span>
+                            </div>
+                            <div style={{ float: "right" }}>
+                                <button className="button is-warning mr-1" onClick={cardDetails.active ? _handleDisable : _handleEnable}>{cardDetails.active ? "Disable" : "Enable"}</button>
+                                <button className="button is-danger" onClick={() => setShowDeleteModal(true)}>Delete</button>
+                            </div>
+                        </div>
                         <div>
-                            <span className="mr-3 title is-4">{cardDetails?.name}</span>
-                            <span className={tagStyle}>{cardDetails.active ? "Active" : "Disabled"}</span>
+                            <p>Belongs to: <NavLink to={"/users/" + userDetails?.id}>{userDetails?.firstName + " " + userDetails?.lastName}</NavLink></p>
+                            <p>Card ID: {cardDetails.id}</p>
+                            <br />
+                            <p>Created at: {new Date(cardDetails.createdAt).toUTCString()}</p>
+                            <p>Updated at: {new Date(cardDetails.updatedAt).toUTCString()}</p>
                         </div>
-                        <div style={{ float: "right" }}>
-                            <button className="button is-warning mr-1" onClick={cardDetails.active ? _handleDisable : _handleEnable}>{cardDetails.active ? "Disable" : "Enable"}</button>
-                            <button className="button is-danger" onClick={_handleDelete}>Delete</button>
-                        </div>
-                    </div>
-                    <div>
-                        <p>Belongs to: <NavLink to={"/users/" + userDetails?.id}>{userDetails?.firstName + " " + userDetails?.lastName}</NavLink></p>
-                        <p>Card ID: {cardDetails.id}</p>
-                        <br />
-                        <p>Created at: {new Date(cardDetails.createdAt).toUTCString()}</p>
-                        <p>Updated at: {new Date(cardDetails.updatedAt).toUTCString()}</p>
-                    </div>
 
+                    </div>
+                </div>
+                <div>
+                    {showDeleteModal && <ConfirmationModal text="Are you sure?" subtext="This action cannot be undone!" onConfirm={_handleDelete} onCancel={() => setShowDeleteModal(false)}/>}
                 </div>
             </div>
         </div>
