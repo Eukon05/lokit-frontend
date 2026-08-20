@@ -1,16 +1,34 @@
 import { useEffect, useState } from "react";
-import { NavLink, useParams } from "react-router";
-import { getIdPAllUsers } from "../service/UserService";
+import { NavLink, useLocation, useNavigate, useParams } from "react-router";
+import { getIdPAllUsers, syncIdpUsers } from "../service/UserService";
 import useAuthSession from "../hooks/useAuthSession";
 import SearchableList from "../components/SearchableList";
 import type { UserResponse } from "../types/responses/user/UserResponse";
 import UserDetails from "../components/UserDetails";
+import ConfirmationModal from "../components/ConfirmationModal";
 
 function Users() {
     const auth = useAuthSession();
+    const location = useLocation();
+    const navigate = useNavigate();
     const { userId } = useParams();
     const [users, setUsers] = useState<UserResponse[]>([]);
     const [query, setQuery] = useState<string>("");
+    const [syncing, setSyncing] = useState<boolean>(false);
+    const [showSyncModal, setShowSyncModal] = useState<boolean>(false);
+
+    async function _handleSync() {
+        setShowSyncModal(false);
+        setSyncing(true);
+        try {
+            await syncIdpUsers(auth.connectedUser.accessToken);
+            navigate('.', { replace: true, state: { refreshUsers: Date.now() } });
+        } catch (error) {
+            console.error("Failed to sync users", error);
+        } finally {
+            setSyncing(false);
+        }
+    }
 
     useEffect(() => {
         let isActive = true;
@@ -32,7 +50,7 @@ function Users() {
         return () => {
             isActive = false;
         };
-    }, [auth.connectedUser.accessToken])
+    }, [auth.connectedUser.accessToken, location.state?.refreshUsers])
 
     const userBlocks = users.filter(user => user.firstName.toLowerCase().includes(query.toLowerCase()) || user.lastName.toLowerCase().includes(query.toLowerCase()))
         .sort((o, t) => o.firstName.localeCompare(t.firstName))
@@ -56,12 +74,22 @@ function Users() {
                     query={query}
                     onQueryChange={setQuery}
                     emptyText="No matching users found"
+                    button={{
+                        text: "Sync",
+                        bulmaStyle: "is-warning",
+                        onClick: () => setShowSyncModal(true),
+                        disabled: syncing,
+                        loading: syncing
+                    }}
                 >
                     {userBlocks}
                 </SearchableList>
             </div>
             <div className="column">
                 {userView}
+            </div>
+            <div>
+                {showSyncModal && <ConfirmationModal text="Are you sure?" subtext="This action will sync all users from the IdP to Lokit's internal database. It may take a long time!" onConfirm={_handleSync} onCancel={() => setShowSyncModal(false)}/>}
             </div>
         </div>
     )
