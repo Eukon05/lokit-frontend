@@ -3,5 +3,7 @@ export type RoomResponse = {
     name: string,
     description: string,
     active: boolean,
-    acl: string[]
+    acl: string[],
+    createdAt: string,
+    updatedAt: string
 }

@@ -103,6 +103,9 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
                         <p className="title is-6">Roles</p>
                         {roleBlocks}
                     </div>
+                    <br />
+                    <p>Created at: {new Date(roomDetails.createdAt).toUTCString()}</p>
+                    <p>Updated at: {new Date(roomDetails.updatedAt).toUTCString()}</p>
                 </div>
             </div>
             <div>

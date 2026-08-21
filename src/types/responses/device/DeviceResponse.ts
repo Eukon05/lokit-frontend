@@ -4,5 +4,7 @@ export type DeviceResponse = {
     description: string,
     physicalAddress: string,
     hasActiveToken: boolean,
-    roomId: string
+    roomId: string,
+    createdAt: string,
+    updatedAt: string
 }

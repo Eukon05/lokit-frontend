@@ -114,6 +114,9 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
                             <p>Belongs to room: {hasAssignedRoom ? (<NavLink to={"/rooms/" + roomDetails?.id}>{roomDetails?.name}</NavLink>) : "None"}</p>
                         </div>
                         {deviceTokenDiv}
+                        <br />
+                        <p>Created at: {new Date(deviceDetails.createdAt).toUTCString()}</p>
+                        <p>Updated at: {new Date(deviceDetails.updatedAt).toUTCString()}</p>
                     </div>
                 </div>
             </div>
