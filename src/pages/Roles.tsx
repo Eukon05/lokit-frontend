@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { NavLink, useLocation, useParams } from "react-router";
 import { getAllRoles } from "../service/RoleService";
 import useAuthSession from "../hooks/useAuthSession";
-import SearchableList from "../components/SearchableList";
+import SearchableList from "../components/common/SearchableList";
 import type { RoleResponse } from "../types/responses/role/RoleResponse";
-import RoleDetails from "../components/RoleDetails";
+import RoleDetails from "../components/role/RoleDetails";
 
 function Roles() {
     const auth = useAuthSession();

@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { deleteRole, disableRole, enableRole, getRole } from "../service/RoleService";
-import type { RoleDetailsProps } from "../types/props/RoleDetailsProps";
-import type { RoleResponse } from "../types/responses/role/RoleResponse";
-import useAuthSession from "../hooks/useAuthSession";
+import { deleteRole, disableRole, enableRole, getRole } from "../../service/RoleService";
+import type { RoleDetailsProps } from "../../types/props/RoleDetailsProps";
+import type { RoleResponse } from "../../types/responses/role/RoleResponse";
+import useAuthSession from "../../hooks/useAuthSession";
 import { useNavigate } from "react-router";
-import ConfirmationModal from "./ConfirmationModal";
+import ConfirmationModal from "../common/ConfirmationModal";
 
 function RoleDetails({ roleId }: RoleDetailsProps) {
     const auth = useAuthSession();

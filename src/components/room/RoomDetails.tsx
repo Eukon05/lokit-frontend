@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 
-import useAuthSession from "../hooks/useAuthSession";
+import useAuthSession from "../../hooks/useAuthSession";
 import { NavLink, useNavigate } from "react-router";
-import type { RoomDetailsProps } from "../types/props/RoomDetailsProps";
-import type { RoomResponse } from "../types/responses/room/RoomResponse";
-import { deleteRoom, disableRoom, enableRoom, getRoom } from "../service/RoomService";
-import type { RoleResponse } from "../types/responses/role/RoleResponse";
-import { lookupRoles } from "../service/RoleService";
-import ConfirmationModal from "./ConfirmationModal";
+import type { RoomDetailsProps } from "../../types/props/RoomDetailsProps";
+import type { RoomResponse } from "../../types/responses/room/RoomResponse";
+import { deleteRoom, disableRoom, enableRoom, getRoom } from "../../service/RoomService";
+import type { RoleResponse } from "../../types/responses/role/RoleResponse";
+import { lookupRoles } from "../../service/RoleService";
+import ConfirmationModal from "../common/ConfirmationModal";
 
 function RoomDetails({ roomId }: RoomDetailsProps) {
     const auth = useAuthSession();

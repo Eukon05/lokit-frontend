@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { getUser } from "../service/UserService";
-import type { UserDetailsProps } from "../types/props/UserDetailsProps";
-import type { UserResponse } from "../types/responses/user/UserResponse";
-import useAuthSession from "../hooks/useAuthSession";
-import type { RoleResponse } from "../types/responses/role/RoleResponse";
-import type { CardResponse } from "../types/responses/card/CardResponse";
-import { getUserRoles, lookupRoles } from "../service/RoleService";
-import { getUserCards, lookupCards } from "../service/CardService";
+import { getUser } from "../../service/UserService";
+import type { UserDetailsProps } from "../../types/props/UserDetailsProps";
+import type { UserResponse } from "../../types/responses/user/UserResponse";
+import useAuthSession from "../../hooks/useAuthSession";
+import type { RoleResponse } from "../../types/responses/role/RoleResponse";
+import type { CardResponse } from "../../types/responses/card/CardResponse";
+import { getUserRoles, lookupRoles } from "../../service/RoleService";
+import { getUserCards, lookupCards } from "../../service/CardService";
 import { NavLink } from "react-router";
 
 function UserDetails({ userId }: UserDetailsProps) {

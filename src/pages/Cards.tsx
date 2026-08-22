@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { NavLink, useLocation, useParams } from "react-router";
 import { getAllCards } from "../service/CardService";
 import useAuthSession from "../hooks/useAuthSession";
-import SearchableList from "../components/SearchableList";
+import SearchableList from "../components/common/SearchableList";
 import type { CardResponse } from "../types/responses/card/CardResponse";
-import CardDetails from "../components/CardDetails";
+import CardDetails from "../components/card/CardDetails";
 
 function Cards() {
     const auth = useAuthSession();

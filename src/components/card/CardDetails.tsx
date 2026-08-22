@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { deleteCard, disableCard, enableCard, getCard } from "../service/CardService";
-import { getUser } from "../service/UserService";
-import type { CardDetailsProps } from "../types/props/CardDetailsProps";
-import useAuthSession from "../hooks/useAuthSession";
-import type { CardResponse } from "../types/responses/card/CardResponse";
-import type { UserResponse } from "../types/responses/user/UserResponse";
+import { deleteCard, disableCard, enableCard, getCard } from "../../service/CardService";
+import { getUser } from "../../service/UserService";
+import type { CardDetailsProps } from "../../types/props/CardDetailsProps";
+import useAuthSession from "../../hooks/useAuthSession";
+import type { CardResponse } from "../../types/responses/card/CardResponse";
+import type { UserResponse } from "../../types/responses/user/UserResponse";
 import { NavLink, useNavigate } from "react-router";
-import ConfirmationModal from "./ConfirmationModal";
+import ConfirmationModal from "../common/ConfirmationModal";
 
 function CardDetails({ cardId }: CardDetailsProps) {
     const auth = useAuthSession();

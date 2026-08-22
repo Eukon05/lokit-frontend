@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { NavLink, useLocation, useParams } from "react-router";
 import { getAllDevices } from "../service/DeviceService";
 import useAuthSession from "../hooks/useAuthSession";
-import SearchableList from "../components/SearchableList";
+import SearchableList from "../components/common/SearchableList";
 import type { DeviceResponse } from "../types/responses/device/DeviceResponse";
-import DeviceDetails from "../components/DeviceDetails";
+import DeviceDetails from "../components/device/DeviceDetails";
 
 function Devices() {
     const auth = useAuthSession();

@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { deleteDevice, removeToken, assignToken, getDevice } from "../service/DeviceService";
-import { getRoom } from "../service/RoomService";
-import type { DeviceDetailsProps } from "../types/props/DeviceDetailsProps";
-import type { DeviceResponse } from "../types/responses/device/DeviceResponse";
-import type { RoomResponse } from "../types/responses/room/RoomResponse";
-import useAuthSession from "../hooks/useAuthSession";
+import { deleteDevice, removeToken, assignToken, getDevice } from "../../service/DeviceService";
+import { getRoom } from "../../service/RoomService";
+import type { DeviceDetailsProps } from "../../types/props/DeviceDetailsProps";
+import type { DeviceResponse } from "../../types/responses/device/DeviceResponse";
+import type { RoomResponse } from "../../types/responses/room/RoomResponse";
+import useAuthSession from "../../hooks/useAuthSession";
 import { NavLink, useNavigate } from "react-router";
-import ConfirmationModal from "./ConfirmationModal";
+import ConfirmationModal from "../common/ConfirmationModal";
 
 function DeviceDetails({ deviceId }: DeviceDetailsProps) {
     const auth = useAuthSession();

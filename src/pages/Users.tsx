@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate, useParams } from "react-router";
 import { getIdPAllUsers, syncIdpUsers } from "../service/UserService";
 import useAuthSession from "../hooks/useAuthSession";
-import SearchableList from "../components/SearchableList";
+import SearchableList from "../components/common/SearchableList";
 import type { UserResponse } from "../types/responses/user/UserResponse";
-import UserDetails from "../components/UserDetails";
-import ConfirmationModal from "../components/ConfirmationModal";
+import UserDetails from "../components/user/UserDetails";
+import ConfirmationModal from "../components/common/ConfirmationModal";
 
 function Users() {
     const auth = useAuthSession();

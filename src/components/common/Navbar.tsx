@@ -1,4 +1,4 @@
-import useAuthSession from "../hooks/useAuthSession.ts"
+import useAuthSession from "../../hooks/useAuthSession.ts"
 
 function Navbar() {
     const auth = useAuthSession();

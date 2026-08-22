@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { getAllRooms } from "../service/RoomService";
 import useAuthSession from "../hooks/useAuthSession";
-import SearchableList from "../components/SearchableList";
+import SearchableList from "../components/common/SearchableList";
 import type { RoomResponse } from "../types/responses/room/RoomResponse";
-import RoomDetails from "../components/RoomDetails";
+import RoomDetails from "../components/room/RoomDetails";
 import { NavLink, useLocation, useParams } from "react-router";
 
 function Rooms() {
