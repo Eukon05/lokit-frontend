@@ -8,6 +8,7 @@ import Roles from './pages/Roles'
 import Devices from './pages/Devices'
 import Rooms from './pages/Rooms'
 import Cards from './pages/Cards'
+import NotFound from './pages/NotFound'
 
 function App() {
     document.body.classList.add('has-navbar-fixed-top')
@@ -36,6 +37,7 @@ function App() {
                                 <Route path="/devices" element={<Devices />} />
                                 <Route path="/devices/:deviceId" element={<Devices />} />
                                 <Route path="/devices/:new" element={<Devices />} />
+                                <Route path="*" element={<NotFound />} />
                             </Route>
                         </Routes>
                     </div>
