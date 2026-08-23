@@ -26,6 +26,7 @@ function App() {
                                 <Route path="/users/:userId" element={<Users />} />
                                 <Route path="/roles" element={<Roles />} />
                                 <Route path="/roles/:roleId" element={<Roles />} />
+                                <Route path="/roles/new" element={<Roles />} />
                                 <Route path="/rooms" element={<Rooms />} />
                                 <Route path="/rooms/:roomId" element={<Rooms />} />
                                 <Route path="/cards" element={<Cards />} />

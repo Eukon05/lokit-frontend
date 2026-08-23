@@ -3,6 +3,7 @@ import type { RoleResponse } from "../types/responses/role/RoleResponse";
 import type { RolePageResponse } from "../types/responses/role/RolePageResponse";
 import type { LookupRolesRequest } from "../types/requests/role/LookupRolesRequest";
 import type { UserRolesResponse } from "../types/responses/user/UserRolesResponse";
+import type { CreateRoleRequest } from "../types/requests/role/CreateRoleRequest";
 
 const ALL_ROLES_ENDPOINT = SERVER_URL + "/api/v1/role";
 const ROLE_ENDPOINT = SERVER_URL + "/api/v1/role";
@@ -35,4 +36,8 @@ export async function lookupRoles(dto: LookupRolesRequest, accessToken: string):
 
 export async function getUserRoles(userId: string, accessToken: string): Promise<UserRolesResponse>{
     return (await makeGet<UserRolesResponse>(USER_ENDPOINT + userId + "/roles", accessToken));
+}
+
+export async function createRole(body: CreateRoleRequest, accessToken: string): Promise<string> {
+    return (await makePost<CreateRoleRequest>(ROLE_ENDPOINT, body, accessToken));
 }

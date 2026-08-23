@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
-import { NavLink, useLocation, useParams } from "react-router";
+import { NavLink, useLocation, useNavigate, useParams } from "react-router";
 import { getAllRoles } from "../service/RoleService";
 import useAuthSession from "../hooks/useAuthSession";
 import SearchableList from "../components/common/SearchableList";
 import type { RoleResponse } from "../types/responses/role/RoleResponse";
 import RoleDetails from "../components/role/RoleDetails";
+import CreateRoleForm from "../components/role/CreateRoleForm";
 
 function Roles() {
     const auth = useAuthSession();
     const location = useLocation();
+    const navigate = useNavigate();
     const { roleId } = useParams();
     const [roles, setRoles] = useState<RoleResponse[]>([]);
     const [query, setQuery] = useState<string>("");
+    const isCreateRolePath = location.pathname === "/roles/new";
 
     useEffect(() => {
         let isActive = true;
@@ -43,7 +46,7 @@ function Roles() {
             </div>
         ));
 
-    const roleView = roleId ? <RoleDetails roleId={roleId} /> : (
+    const roleView = isCreateRolePath ? <CreateRoleForm /> : roleId ? <RoleDetails roleId={roleId} /> : (
         <div className="block">
             <p className="title has-text-centered">Select a role to view details</p>
         </div>
@@ -57,6 +60,13 @@ function Roles() {
                     query={query}
                     onQueryChange={setQuery}
                     emptyText="No matching roles found"
+                    button={
+                        {
+                            text: "Create new",
+                            bulmaStyle: "is-warning",
+                            onClick: () => { navigate("/roles/new") }
+                        }
+                    }
                 >
                     {roleBlocks}
                 </SearchableList>
