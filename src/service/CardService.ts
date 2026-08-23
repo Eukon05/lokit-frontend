@@ -3,6 +3,7 @@ import type { CardPageResponse } from "../types/responses/card/CardPageResponse"
 import type { CardResponse } from "../types/responses/card/CardResponse";
 import type { LookupCardsRequest } from "../types/requests/card/LookupCardsRequest";
 import type { UserCardsResponse } from "../types/responses/user/UserCardsResponse";
+import type { CreateCardRequest } from "../types/requests/card/CreateCardRequest";
 
 const ALL_CARDS_ENDPOINT = SERVER_URL + "/api/v1/card";
 const CARD_ENDPOINT = SERVER_URL + "/api/v1/card/";
@@ -35,4 +36,8 @@ export async function lookupCards(dto: LookupCardsRequest, accessToken: string):
 
 export async function getUserCards(userId: string, accessToken: string): Promise<UserCardsResponse>{
      return (await makeGet<UserCardsResponse>(USER_ENDPOINT + userId + "/cards", accessToken));
+}
+
+export async function createCard(body: CreateCardRequest, accessToken: string): Promise<string> {
+    return (await makePost<CreateCardRequest>(ALL_CARDS_ENDPOINT, body, accessToken));
 }

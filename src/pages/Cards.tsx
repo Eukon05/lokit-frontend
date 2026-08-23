@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
-import { NavLink, useLocation, useParams } from "react-router";
+import { NavLink, useLocation, useNavigate, useParams } from "react-router";
 import { getAllCards } from "../service/CardService";
 import useAuthSession from "../hooks/useAuthSession";
 import SearchableList from "../components/common/SearchableList";
 import type { CardResponse } from "../types/responses/card/CardResponse";
 import CardDetails from "../components/card/CardDetails";
+import CreateCardForm from "../components/card/CreateCardForm";
 
 function Cards() {
     const auth = useAuthSession();
     const location = useLocation();
+    const navigate = useNavigate();
     const { cardId } = useParams();
     const [cards, setCards] = useState<CardResponse[]>([]);
     const [query, setQuery] = useState<string>("");
+    const isCreateCardPath = location.pathname === "/cards/new";
 
     useEffect(() => {
         let isActive = true;
@@ -43,7 +46,7 @@ function Cards() {
             </div>
         ));
 
-    const cardView = cardId ? <CardDetails cardId={cardId} /> : (
+    const cardView = isCreateCardPath ? <CreateCardForm /> : cardId ? <CardDetails cardId={cardId} /> : (
         <div className="block">
             <p className="title has-text-centered">Select a card to view details</p>
         </div>
@@ -57,6 +60,11 @@ function Cards() {
                     query={query}
                     onQueryChange={setQuery}
                     emptyText="No matching cards found"
+                    button={{
+                        text: "Create new",
+                        bulmaStyle: "is-warning",
+                        onClick: () => {navigate("/cards/new")}
+                    }}
                 >
                     {cardBlocks}
                 </SearchableList>
