@@ -1,10 +1,10 @@
 import { useRef } from 'react'
-import type { CreateRoleRequest } from '../../types/requests/role/CreateRoleRequest';
-import { createRole } from '../../service/RoleService';
+import type { CreateRoomRequest } from '../../types/requests/room/CreateRoomRequest';
+import { createRoom } from '../../service/RoomService';
 import useAuthSession from '../../hooks/useAuthSession';
 import { useNavigate } from 'react-router';
 
-function CreateRoleForm() {
+function CreateRoomForm() {
     const auth = useAuthSession();
     const navigate = useNavigate();
     const nameInput = useRef<HTMLInputElement>(null);
@@ -23,13 +23,13 @@ function CreateRoleForm() {
         if(!name || !desc)
             return;
 
-        const body: CreateRoleRequest = {
+        const body: CreateRoomRequest = {
             name: name ?? "",
             description: desc ?? ""
         };
 
-        const roleId: string = (await createRole(body, auth.connectedUser.accessToken)).replaceAll("\"", "");
-        navigate("/roles/" + roleId, { replace: true, state: { refreshRoles: Date.now() } });
+        const roomId: string = (await createRoom(body, auth.connectedUser.accessToken)).replaceAll("\"", "");
+        navigate("/rooms/" + roomId, { replace: true, state: { refreshRooms: Date.now() } });
     }
 
     return (
@@ -38,7 +38,7 @@ function CreateRoleForm() {
                 <div className="card-content">
                     <div className="media-content">
                         <div>
-                            <p className='title'>Create a new role</p>
+                            <p className='title'>Create a new room</p>
                         </div>
                         <div>
                             <div className="field">
@@ -66,4 +66,4 @@ function CreateRoleForm() {
     )
 }
 
-export default CreateRoleForm;
+export default CreateRoomForm;

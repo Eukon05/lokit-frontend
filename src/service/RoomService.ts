@@ -1,6 +1,7 @@
 import { makeDelete, makeGet, makePost, SERVER_URL } from "./RequestHelper";
 import type { RoomPageResponse } from "../types/responses/room/RoomPageResponse";
 import type { RoomResponse } from "../types/responses/room/RoomResponse";
+import type { CreateRoomRequest } from "../types/requests/room/CreateRoomRequest";
 
 const ALL_ROOMS_ENDPOINT = SERVER_URL + "/api/v1/room"
 const ROOM_ENDPOINT = SERVER_URL + "/api/v1/room/"
@@ -23,4 +24,8 @@ export async function enableRoom(roleId: string, accessToken: string): Promise<v
 
 export async function disableRoom(roleId: string, accessToken: string): Promise<void> {
     await makePost<null>(ROOM_ENDPOINT + roleId + "/disable", null, accessToken);
+}
+
+export async function createRoom(body: CreateRoomRequest, accessToken: string): Promise<string> {
+    return (await makePost<CreateRoomRequest>(ALL_ROOMS_ENDPOINT, body, accessToken));
 }

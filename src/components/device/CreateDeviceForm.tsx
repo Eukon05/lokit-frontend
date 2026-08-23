@@ -1,18 +1,22 @@
 import { useRef } from 'react'
-import type { CreateRoleRequest } from '../../types/requests/role/CreateRoleRequest';
-import { createRole } from '../../service/RoleService';
 import useAuthSession from '../../hooks/useAuthSession';
 import { useNavigate } from 'react-router';
+import type { CreateDeviceRequest } from '../../types/requests/device/CreateDeviceRequest';
+import { createDevice } from '../../service/DeviceService';
 
-function CreateRoleForm() {
+function CreateDeviceForm() {
     const auth = useAuthSession();
     const navigate = useNavigate();
     const nameInput = useRef<HTMLInputElement>(null);
     const descriptionInput = useRef<HTMLInputElement>(null);
+    const physicalAddrInput = useRef<HTMLInputElement>(null);
+
+    const macPattern = '^((([0-9A-Fa-f]{2})(:|-)){5}([0-9A-Fa-f]{2})|([0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}\.[0-9A-Fa-f]{4}))$';
 
     async function _submitAction() {
         const name = nameInput.current?.value;
         const desc = descriptionInput.current?.value;
+        const phyAddr = physicalAddrInput.current?.value;
 
         if(!name)
             nameInput.current?.classList.add("is-danger")
@@ -20,16 +24,20 @@ function CreateRoleForm() {
         if(!desc)
             descriptionInput.current?.classList.add("is-danger")
 
-        if(!name || !desc)
+        if(!phyAddr || !phyAddr.match(macPattern))
+            physicalAddrInput.current?.classList.add("is-danger")
+
+        if(!name || !desc || !phyAddr || !phyAddr.match(macPattern))
             return;
 
-        const body: CreateRoleRequest = {
+        const body: CreateDeviceRequest = {
             name: name ?? "",
-            description: desc ?? ""
+            description: desc ?? "",
+            physicalAddress: phyAddr ?? ""
         };
 
-        const roleId: string = (await createRole(body, auth.connectedUser.accessToken)).replaceAll("\"", "");
-        navigate("/roles/" + roleId, { replace: true, state: { refreshRoles: Date.now() } });
+        const deviceId: string = (await createDevice(body, auth.connectedUser.accessToken)).replaceAll("\"", "");
+        navigate("/devices/" + deviceId, { replace: true, state: { refreshDevices: Date.now() } });
     }
 
     return (
@@ -38,7 +46,7 @@ function CreateRoleForm() {
                 <div className="card-content">
                     <div className="media-content">
                         <div>
-                            <p className='title'>Create a new role</p>
+                            <p className='title'>Create a new device</p>
                         </div>
                         <div>
                             <div className="field">
@@ -51,6 +59,12 @@ function CreateRoleForm() {
                                 <label className="label">Description</label>
                                 <div className="control">
                                     <input className="input" type="text" ref={descriptionInput} maxLength={500} required/>
+                                </div>
+                            </div>
+                            <div className="field">
+                                <label className="label">Physical address (MAC)</label>
+                                <div className="control">
+                                    <input className="input" type="text" ref={physicalAddrInput} maxLength={17} pattern={macPattern} required/>
                                 </div>
                             </div>
                             <div className='field'>
@@ -66,4 +80,4 @@ function CreateRoleForm() {
     )
 }
 
-export default CreateRoleForm;
+export default CreateDeviceForm;

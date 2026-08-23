@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
-import { NavLink, useLocation, useParams } from "react-router";
+import { NavLink, useLocation, useNavigate, useParams } from "react-router";
 import { getAllDevices } from "../service/DeviceService";
 import useAuthSession from "../hooks/useAuthSession";
 import SearchableList from "../components/common/SearchableList";
 import type { DeviceResponse } from "../types/responses/device/DeviceResponse";
 import DeviceDetails from "../components/device/DeviceDetails";
+import CreateDeviceForm from "../components/device/CreateDeviceForm";
 
 function Devices() {
     const auth = useAuthSession();
+    const navigate = useNavigate();
     const location = useLocation();
     const { deviceId } = useParams();
     const [devices, setDevices] = useState<DeviceResponse[]>([]);
     const [query, setQuery] = useState<string>("");
+    const isCreateDevicePath = location.pathname === "/devices/new";
 
     useEffect(() => {
         let isActive = true;
@@ -43,7 +46,7 @@ function Devices() {
             </div>
         ));
 
-    const deviceView = deviceId ? <DeviceDetails deviceId={deviceId} /> : (
+    const deviceView = isCreateDevicePath ? <CreateDeviceForm /> : deviceId ? <DeviceDetails deviceId={deviceId} /> : (
         <div className="block">
             <p className="title has-text-centered">Select a device to view details</p>
         </div>
@@ -57,6 +60,13 @@ function Devices() {
                     query={query}
                     onQueryChange={setQuery}
                     emptyText="No matching devices found"
+                    button={
+                        {
+                            text: "Create new",
+                            bulmaStyle: "is-warning",
+                            onClick: () => { navigate("/devices/new") }
+                        }
+                    }
                 >
                     {deviceBlocks}
                 </SearchableList>

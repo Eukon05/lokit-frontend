@@ -29,10 +29,12 @@ function App() {
                                 <Route path="/roles/new" element={<Roles />} />
                                 <Route path="/rooms" element={<Rooms />} />
                                 <Route path="/rooms/:roomId" element={<Rooms />} />
+                                <Route path="/rooms/new" element={<Rooms />} />
                                 <Route path="/cards" element={<Cards />} />
                                 <Route path="/cards/:cardId" element={<Cards />} />
                                 <Route path="/devices" element={<Devices />} />
                                 <Route path="/devices/:deviceId" element={<Devices />} />
+                                <Route path="/devices/:new" element={<Devices />} />
                             </Route>
                         </Routes>
                     </div>

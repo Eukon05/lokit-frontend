@@ -4,14 +4,17 @@ import useAuthSession from "../hooks/useAuthSession";
 import SearchableList from "../components/common/SearchableList";
 import type { RoomResponse } from "../types/responses/room/RoomResponse";
 import RoomDetails from "../components/room/RoomDetails";
-import { NavLink, useLocation, useParams } from "react-router";
+import { NavLink, useLocation, useNavigate, useParams } from "react-router";
+import CreateRoomForm from "../components/room/CreateRoomForm";
 
 function Rooms() {
     const auth = useAuthSession();
+    const navigate = useNavigate();
     const location = useLocation();
     const {roomId} = useParams();
     const [rooms, setRooms] = useState<RoomResponse[]>([]);
     const [query, setQuery] = useState<string>("");
+    const isCreateRoomPath = location.pathname === "/rooms/new";
 
     useEffect(() => {
         let isActive = true;
@@ -43,7 +46,7 @@ function Rooms() {
             </div>
         ));
 
-    const roomView = roomId ? <RoomDetails roomId={roomId} /> : (
+    const roomView = isCreateRoomPath ? <CreateRoomForm /> : roomId ? <RoomDetails roomId={roomId} /> : (
         <div className="block">
             <p className="title has-text-centered">Select a room to view details</p>
         </div>
@@ -58,6 +61,13 @@ function Rooms() {
                     query={query}
                     onQueryChange={setQuery}
                     emptyText="No matching rooms found"
+                    button={
+                        {
+                            text: "Create new",
+                            bulmaStyle: "is-warning",
+                            onClick: () => { navigate("/rooms/new") }
+                        }
+                    }
                 >
                     {roomBlocks}
                 </SearchableList>
