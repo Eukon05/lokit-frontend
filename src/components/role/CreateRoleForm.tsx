@@ -3,6 +3,7 @@ import type { CreateRoleRequest } from '../../types/requests/role/CreateRoleRequ
 import { createRole } from '../../service/RoleService';
 import useAuthSession from '../../hooks/useAuthSession';
 import { useNavigate } from 'react-router';
+import toast from 'react-hot-toast';
 
 function CreateRoleForm() {
     const auth = useAuthSession();
@@ -47,6 +48,7 @@ function CreateRoleForm() {
         };
 
         const roleId: string = (await createRole(body, auth.connectedUser.accessToken)).replaceAll("\"", "");
+        toast.success("Role created!");
         navigate("/roles/" + roleId, { replace: true, state: { refreshRoles: Date.now() } });
     }
 

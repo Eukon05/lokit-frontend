@@ -3,6 +3,7 @@ import useAuthSession from '../../hooks/useAuthSession';
 import { useNavigate } from 'react-router';
 import type { CreateDeviceRequest } from '../../types/requests/device/CreateDeviceRequest';
 import { createDevice } from '../../service/DeviceService';
+import toast from 'react-hot-toast';
 
 function CreateDeviceForm() {
     const auth = useAuthSession();
@@ -63,6 +64,7 @@ function CreateDeviceForm() {
         };
 
         const deviceId: string = (await createDevice(body, auth.connectedUser.accessToken)).replaceAll("\"", "");
+        toast.success("Device created!");
         navigate("/devices/" + deviceId, { replace: true, state: { refreshDevices: Date.now() } });
     }
 

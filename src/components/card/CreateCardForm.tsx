@@ -5,6 +5,7 @@ import useAuthSession from '../../hooks/useAuthSession';
 import { useNavigate } from 'react-router';
 import { getIdPAllUsers } from '../../service/UserService';
 import type { UserResponse } from '../../types/responses/user/UserResponse';
+import toast from 'react-hot-toast';
 
 function CreateCardForm() {
     const auth = useAuthSession();
@@ -83,6 +84,7 @@ function CreateCardForm() {
         };
 
         const cardId: string = (await createCard(body, auth.connectedUser.accessToken)).replaceAll("\"", "");
+        toast.success("Card created!")
         navigate("/cards/" + cardId, { replace: true, state: { refreshCards: Date.now() } });
     }
 

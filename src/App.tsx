@@ -9,6 +9,7 @@ import Devices from './pages/Devices'
 import Rooms from './pages/Rooms'
 import Cards from './pages/Cards'
 import NotFound from './pages/NotFound'
+import { Toaster } from 'react-hot-toast'
 
 function App() {
     document.body.classList.add('has-navbar-fixed-top')
@@ -42,6 +43,7 @@ function App() {
                         </Routes>
                     </div>
                 </div>
+                <Toaster/>
             </div >
         </BrowserRouter>
     )

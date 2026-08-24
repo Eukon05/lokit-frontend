@@ -3,6 +3,7 @@ import type { CreateRoomRequest } from '../../types/requests/room/CreateRoomRequ
 import { createRoom } from '../../service/RoomService';
 import useAuthSession from '../../hooks/useAuthSession';
 import { useNavigate } from 'react-router';
+import toast from 'react-hot-toast';
 
 function CreateRoomForm() {
     const auth = useAuthSession();
@@ -47,6 +48,7 @@ function CreateRoomForm() {
         };
 
         const roomId: string = (await createRoom(body, auth.connectedUser.accessToken)).replaceAll("\"", "");
+        toast.success("Room created!");
         navigate("/rooms/" + roomId, { replace: true, state: { refreshRooms: Date.now() } });
     }
 
