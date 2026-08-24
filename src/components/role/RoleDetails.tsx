@@ -5,6 +5,7 @@ import type { RoleResponse } from "../../types/responses/role/RoleResponse";
 import useAuthSession from "../../hooks/useAuthSession";
 import { useNavigate } from "react-router";
 import ConfirmationModal from "../common/ConfirmationModal";
+import toast from "react-hot-toast";
 
 function RoleDetails({ roleId }: RoleDetailsProps) {
     const auth = useAuthSession();
@@ -16,6 +17,7 @@ function RoleDetails({ roleId }: RoleDetailsProps) {
         try {
             await enableRole(roleId, auth.connectedUser.accessToken);
             setRoleDetails((previous) => previous ? { ...previous, active: true } : previous);
+            toast.success("Role enabled!");
         }
         catch (error) {
             console.error("Failed to enable role " + roleId, error);
@@ -26,6 +28,7 @@ function RoleDetails({ roleId }: RoleDetailsProps) {
         try {
             await disableRole(roleId, auth.connectedUser.accessToken);
             setRoleDetails((previous) => previous ? { ...previous, active: false } : previous);
+            toast.success("Role disabled");
         }
         catch (error) {
             console.error("Failed to disable role " + roleId, error);
@@ -35,6 +38,7 @@ function RoleDetails({ roleId }: RoleDetailsProps) {
     async function _handleDelete() {
         try {
             await deleteRole(roleId, auth.connectedUser.accessToken);
+            toast.success("Role deleted!");
             navigate("/roles", { replace: true, state: { refreshRoles: Date.now() } });
         }
         catch (error) {

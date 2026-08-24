@@ -7,6 +7,7 @@ import type { CardResponse } from "../../types/responses/card/CardResponse";
 import type { UserResponse } from "../../types/responses/user/UserResponse";
 import { NavLink, useNavigate } from "react-router";
 import ConfirmationModal from "../common/ConfirmationModal";
+import toast from "react-hot-toast";
 
 function CardDetails({ cardId }: CardDetailsProps) {
     const auth = useAuthSession();
@@ -19,6 +20,7 @@ function CardDetails({ cardId }: CardDetailsProps) {
         try {
             await enableCard(cardId, auth.connectedUser.accessToken);
             setCardDetails((previous) => previous ? { ...previous, active: true } : previous);
+            toast.success("Card enabled!");
         }
         catch (error) {
             console.error("Failed to enable card " + cardId, error);
@@ -29,6 +31,7 @@ function CardDetails({ cardId }: CardDetailsProps) {
         try {
             await disableCard(cardId, auth.connectedUser.accessToken);
             setCardDetails((previous) => previous ? { ...previous, active: false } : previous);
+            toast.success("Card disabled");
         }
         catch (error) {
             console.error("Failed to disable card " + cardId, error);
@@ -38,6 +41,7 @@ function CardDetails({ cardId }: CardDetailsProps) {
     async function _handleDelete() {
         try {
             await deleteCard(cardId, auth.connectedUser.accessToken);
+            toast.success("Card deleted!");
             navigate("/cards", { replace: true, state: { refreshCards: Date.now() } });
         }
         catch (error) {

@@ -8,6 +8,7 @@ import { deleteRoom, disableRoom, enableRoom, getRoom } from "../../service/Room
 import type { RoleResponse } from "../../types/responses/role/RoleResponse";
 import { lookupRoles } from "../../service/RoleService";
 import ConfirmationModal from "../common/ConfirmationModal";
+import toast from "react-hot-toast";
 
 function RoomDetails({ roomId }: RoomDetailsProps) {
     const auth = useAuthSession();
@@ -20,6 +21,7 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
         try {
             await enableRoom(roomId, auth.connectedUser.accessToken);
             setRoomDetails((previous) => previous ? { ...previous, active: true } : previous);
+            toast.success("Room enabled!");
         }
         catch (error) {
             console.error("Failed to enable room " + roomId, error);
@@ -30,6 +32,7 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
         try {
             await disableRoom(roomId, auth.connectedUser.accessToken);
             setRoomDetails((previous) => previous ? { ...previous, active: false } : previous);
+            toast.success("Room disabled");
         }
         catch (error) {
             console.error("Failed to disable room " + roomId, error);
@@ -39,6 +42,7 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
     async function _handleDelete() {
         try {
             await deleteRoom(roomId, auth.connectedUser.accessToken);
+            toast.success("Room deleted!");
             navigate("/rooms", { replace: true, state: { refreshRooms: Date.now() } });
         }
         catch (error) {

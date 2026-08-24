@@ -1,7 +1,10 @@
+import toast from "react-hot-toast";
+import type { ApiErrorResponse } from "../types/responses/ApiErrorResponse";
+
 export const SERVER_URL: string = import.meta.env.VITE_LOKIT_SERVER_URL;
 
-function _handleResponseStatus(responseStatus: number){
-    switch (responseStatus) {
+async function _handleResponseStatus(response: Response){
+    switch (response.status) {
         case 401:
             throw new Error("Unauthenticated!");
         case 403:
@@ -11,6 +14,21 @@ function _handleResponseStatus(responseStatus: number){
         case 200:
         case 201:
             return;
+        case 409: {
+            const err: ApiErrorResponse = await response.json() as ApiErrorResponse;
+            toast.error(err.message);
+            throw new Error(err.message);
+        }
+        case 400: {
+            const err: ApiErrorResponse = await response.json() as ApiErrorResponse;
+            let toastMsg: string = (err.message ?? "Bad request") + "\n\n";
+
+            Object.entries(err.errors ?? {}).forEach(([k, v]) => {
+                toastMsg += k + ": " + v + "\n";
+            });
+            toast.error(toastMsg);
+            throw new Error(err.message);
+        }
         default:
             throw new Error("Unknown code!");
     }
@@ -21,7 +39,7 @@ export async function makeGet<T>(url: string, accessToken: string): Promise<T> {
         headers: { Authorization: "Bearer " + accessToken }
     });
 
-    _handleResponseStatus(response.status);
+    _handleResponseStatus(response);
     return response.json() as Promise<T>;
 }
 
@@ -31,7 +49,7 @@ export async function makeDelete(url: string, accessToken: string): Promise<void
         method: "DELETE"
     });
 
-    _handleResponseStatus(response.status);
+    _handleResponseStatus(response);
 }
 
 export async function makePost<T>(url: string, requestBody: T, accessToken: string): Promise<string>{
@@ -41,6 +59,6 @@ export async function makePost<T>(url: string, requestBody: T, accessToken: stri
         method: "POST",
     });
 
-    _handleResponseStatus(response.status);
+    _handleResponseStatus(response);
     return await response.text();
 }

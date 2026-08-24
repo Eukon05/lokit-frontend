@@ -7,6 +7,7 @@ import type { RoomResponse } from "../../types/responses/room/RoomResponse";
 import useAuthSession from "../../hooks/useAuthSession";
 import { NavLink, useNavigate } from "react-router";
 import ConfirmationModal from "../common/ConfirmationModal";
+import toast from "react-hot-toast";
 
 function DeviceDetails({ deviceId }: DeviceDetailsProps) {
     const auth = useAuthSession();
@@ -22,6 +23,7 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
             const token = await assignToken(deviceId, auth.connectedUser.accessToken);
             setDeviceDetails((previous) => previous ? { ...previous, hasActiveToken: true } : previous);
             setDeviceToken(token);
+            toast.success("Token assigned!");
         }
         catch (error) {
             console.error("Failed to enable device " + deviceId, error);
@@ -33,6 +35,7 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
             await removeToken(deviceId, auth.connectedUser.accessToken);
             setDeviceDetails((previous) => previous ? { ...previous, hasActiveToken: false } : previous);
             setDeviceToken(undefined);
+            toast.success("Token revoked!");
         }
         catch (error) {
             console.error("Failed to disable device " + deviceId, error);
@@ -45,6 +48,7 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
     async function _handleDelete() {
         try {
             await deleteDevice(deviceId, auth.connectedUser.accessToken);
+            toast.success("Device deleted!");
             navigate("/devices", { replace: true, state: { refreshDevices: Date.now() } });
         }
         catch (error) {

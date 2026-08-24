@@ -6,6 +6,7 @@ import SearchableList from "../components/common/SearchableList";
 import type { UserResponse } from "../types/responses/user/UserResponse";
 import UserDetails from "../components/user/UserDetails";
 import ConfirmationModal from "../components/common/ConfirmationModal";
+import toast from "react-hot-toast";
 
 function Users() {
     const auth = useAuthSession();
@@ -22,6 +23,7 @@ function Users() {
         setSyncing(true);
         try {
             await syncIdpUsers(auth.connectedUser.accessToken);
+            toast.success("Synced the users from IdP!")
             navigate('.', { replace: true, state: { refreshUsers: Date.now() } });
         } catch (error) {
             console.error("Failed to sync users", error);
