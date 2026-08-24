@@ -14,6 +14,10 @@ function CreateCardForm() {
     const userIdInput = useRef<HTMLSelectElement>(null);
     const [users, setUsers] = useState<UserResponse[]>();
 
+    const nameHelp = useRef<HTMLParagraphElement>(null);
+    const idHelp = useRef<HTMLParagraphElement>(null);
+    const userIdHelp = useRef<HTMLParagraphElement>(null);
+
     useEffect(() => {
         let isActive = true;
 
@@ -37,20 +41,39 @@ function CreateCardForm() {
     }, []);
 
     async function _submitAction() {
-        const name = nameInput.current?.value;
-        const id = idInput.current?.value;
-        const userId = userIdInput.current?.value;
+        const name = nameInput.current?.value.trim();
+        const id = idInput.current?.value.trim();
+        const userId = userIdInput.current?.value.trim();
 
-        if (!name)
+        const nameInvalid = !name || name.length > 100;
+        const idInvalid = !id || id.length != 8;
+        const userIdInvalid = !userId;
+
+        if (nameInvalid) {
             nameInput.current?.classList.add("is-danger")
+            if (nameHelp.current) nameHelp.current.style.visibility = "visible";
+        } else {
+            nameInput.current?.classList.remove("is-danger")
+            if (nameHelp.current) nameHelp.current.style.visibility = "hidden";
+        }
 
-        if (!userId)
+        if (userIdInvalid) {
             userIdInput.current?.classList.add("is-danger")
+            if (userIdHelp.current) userIdHelp.current.style.visibility = "visible";
+        } else {
+            userIdInput.current?.classList.remove("is-danger")
+            if (userIdHelp.current) userIdHelp.current.style.visibility = "hidden";
+        }
 
-        if (!id)
+        if (idInvalid) {
             idInput.current?.classList.add("is-danger")
+            if (idHelp.current) idHelp.current.style.visibility = "visible";
+        } else {
+            idInput.current?.classList.remove("is-danger")
+            if (idHelp.current) idHelp.current.style.visibility = "hidden";
+        }
 
-        if (!name || !id || !userId)
+        if (nameInvalid || idInvalid || userIdInvalid)
             return;
 
         const body: CreateCardRequest = {
@@ -77,12 +100,14 @@ function CreateCardForm() {
                                 <div className="control">
                                     <input className="input" type="text" ref={nameInput} maxLength={100} required />
                                 </div>
+                                <p className="help is-danger" style={{visibility: "hidden"}} ref={nameHelp}>The name of the card cannot be empty or exceed 100 characters</p>
                             </div>
                             <div className="field">
                                 <label className="label">Card ID</label>
                                 <div className="control">
                                     <input className="input" type="text" ref={idInput} maxLength={8} required />
                                 </div>
+                                <p className="help is-danger" style={{visibility: "hidden"}} ref={idHelp}>The ID of the card must be exactly 8 characters long</p>
                             </div>
                             <div className="field">
                                 <label className="label">Owner</label>
@@ -96,6 +121,7 @@ function CreateCardForm() {
                                         </select>
                                     </div>
                                 </div>
+                                <p className="help is-danger" style={{visibility: "hidden"}} ref={userIdHelp}>Please select an owner for the card</p>
                             </div>
                             <div className='field'>
                                 <div className="control">

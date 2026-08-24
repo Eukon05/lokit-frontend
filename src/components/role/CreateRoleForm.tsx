@@ -10,22 +10,40 @@ function CreateRoleForm() {
     const nameInput = useRef<HTMLInputElement>(null);
     const descriptionInput = useRef<HTMLInputElement>(null);
 
+    const nameHelp = useRef<HTMLParagraphElement>(null);
+    const descriptionHelp = useRef<HTMLParagraphElement>(null);
+
     async function _submitAction() {
-        const name = nameInput.current?.value;
-        const desc = descriptionInput.current?.value;
+        const name = nameInput.current?.value.trim();
+        const description = descriptionInput.current?.value.trim();
 
-        if(!name)
+        const nameInvalid = !name || name.length > 100
+        const descriptionInvalid = !description || description.length > 500
+
+        if(nameInvalid){
             nameInput.current?.classList.add("is-danger")
+            if(nameHelp.current) nameHelp.current.style.visibility = "visible";
+        }
+        else {
+            nameInput.current?.classList.remove("is-danger")
+            if(nameHelp.current) nameHelp.current.style.visibility = "hidden";
+        }
 
-        if(!desc)
+        if(descriptionInvalid){
             descriptionInput.current?.classList.add("is-danger")
+            if(descriptionHelp.current) descriptionHelp.current.style.visibility = "visible";
+        }
+        else {
+            descriptionInput.current?.classList.remove("is-danger")
+            if(descriptionHelp.current) descriptionHelp.current.style.visibility = "hidden";
+        }
 
-        if(!name || !desc)
+        if(nameInvalid || descriptionInvalid)
             return;
 
         const body: CreateRoleRequest = {
             name: name ?? "",
-            description: desc ?? ""
+            description: description ?? ""
         };
 
         const roleId: string = (await createRole(body, auth.connectedUser.accessToken)).replaceAll("\"", "");
@@ -46,12 +64,14 @@ function CreateRoleForm() {
                                 <div className="control">
                                     <input className="input" type="text" ref={nameInput} maxLength={100} required/>
                                 </div>
+                                <p className="help is-danger" style={{visibility: "hidden"}} ref={nameHelp}>The name of the role cannot be empty or exceed 100 characters</p>
                             </div>
                             <div className="field">
                                 <label className="label">Description</label>
                                 <div className="control">
                                     <input className="input" type="text" ref={descriptionInput} maxLength={500} required/>
                                 </div>
+                                <p className="help is-danger" style={{visibility: "hidden"}} ref={descriptionHelp}>The description of the role cannot be empty or exceed 500 characters</p>
                             </div>
                             <div className='field'>
                                 <div className="control">
