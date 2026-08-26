@@ -1,19 +1,33 @@
 import { useState, useEffect } from "react";
-import { getUser } from "../../service/UserService";
+import { assignUserRole, getUser, getUserRoles } from "../../service/UserService";
 import type { UserDetailsProps } from "../../types/props/UserDetailsProps";
 import type { UserResponse } from "../../types/responses/user/UserResponse";
 import useAuthSession from "../../hooks/useAuthSession";
 import type { RoleResponse } from "../../types/responses/role/RoleResponse";
 import type { CardResponse } from "../../types/responses/card/CardResponse";
-import { getUserRoles, lookupRoles } from "../../service/RoleService";
+import { lookupRoles } from "../../service/RoleService";
 import { getUserCards, lookupCards } from "../../service/CardService";
 import { NavLink } from "react-router";
+import toast from "react-hot-toast";
+import AssignRoleModal from "../common/AssignRoleModal";
 
 function UserDetails({ userId }: UserDetailsProps) {
     const auth = useAuthSession();
     const [userDetails, setUserDetails] = useState<UserResponse>();
     const [userRoles, setUserRoles] = useState<RoleResponse[]>();
     const [userCards, setUserCards] = useState<CardResponse[]>();
+    const [showRoleAssignModal, setShowRoleAssignModal] = useState<boolean>(false);
+
+    async function handleAssignRole(roleId: string) {
+        setShowRoleAssignModal(false);
+        try {
+            await assignUserRole(userId, roleId, auth.connectedUser.accessToken);
+            toast.success("Role assigned!");
+        }
+        catch (error) {
+            console.error("Failed to assign role " + roleId, error);
+        }
+    }
 
     useEffect(() => {
         let isActive = true;
@@ -67,8 +81,15 @@ function UserDetails({ userId }: UserDetailsProps) {
         <div className="card">
             <div className="card-content">
                 <div className="media-content">
-                    <p className="title is-4">{userDetails?.firstName + " " + userDetails?.lastName}</p>
-                    <p className="subtitle is-6">{userDetails?.email}</p>
+                    <div className="is-flex is-flex-wrap-wrap is-flex-direction-row is-justify-content-space-between">
+                        <div>
+                            <p className="title is-4">{userDetails?.firstName + " " + userDetails?.lastName}</p>
+                            <p className="subtitle is-6">{userDetails?.email}</p>
+                        </div>
+                        <div style={{ float: "right" }}>
+                            <button className="button is-warning mr-1" onClick={() => setShowRoleAssignModal(true)}>Assign role</button>
+                        </div>
+                    </div>
                 </div>
                 <br />
                 <div>
@@ -80,6 +101,9 @@ function UserDetails({ userId }: UserDetailsProps) {
                     <p className="title is-6">Cards</p>
                     {cardBlocks}
                 </div>
+            </div>
+            <div>
+                {showRoleAssignModal && <AssignRoleModal excludeRoles={userRoles} onConfirm={handleAssignRole} onCancel={() => setShowRoleAssignModal(false)} />}
             </div>
         </div>
     ) :
