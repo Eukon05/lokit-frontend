@@ -1,4 +1,4 @@
-import type { ConfirmationModalProps } from "../types/props/ConfirmationModalProps";
+import type { ConfirmationModalProps } from "../../types/props/ConfirmationModalProps";
 
 function ConfirmationModal({ text, subtext, onConfirm, onCancel}: ConfirmationModalProps) {
     return (
