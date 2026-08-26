@@ -26,6 +26,10 @@ export async function disableRoom(roleId: string, accessToken: string): Promise<
     await makePost<null>(ROOM_ENDPOINT + roleId + "/disable", null, accessToken);
 }
 
+export async function assignRoomRole(roomId: string, roleId: string, accessToken: string): Promise<void> {
+    await makePost<null>(ROOM_ENDPOINT + roomId + "/acl/" + roleId, null, accessToken);
+}
+
 export async function createRoom(body: CreateRoomRequest, accessToken: string): Promise<string> {
     return (await makePost<CreateRoomRequest>(ALL_ROOMS_ENDPOINT, body, accessToken));
 }

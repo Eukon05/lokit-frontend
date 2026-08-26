@@ -17,11 +17,13 @@ function UserDetails({ userId }: UserDetailsProps) {
     const [userRoles, setUserRoles] = useState<RoleResponse[]>();
     const [userCards, setUserCards] = useState<CardResponse[]>();
     const [showRoleAssignModal, setShowRoleAssignModal] = useState<boolean>(false);
+    const [rolesRefreshKey, setRolesRefreshKey] = useState(0);
 
     async function handleAssignRole(roleId: string) {
         setShowRoleAssignModal(false);
         try {
             await assignUserRole(userId, roleId, auth.connectedUser.accessToken);
+            setRolesRefreshKey((previous) => previous + 1);
             toast.success("Role assigned!");
         }
         catch (error) {
@@ -63,16 +65,16 @@ function UserDetails({ userId }: UserDetailsProps) {
         return () => {
             isActive = false;
         };
-    }, [userId])
+    }, [userId, rolesRefreshKey])
 
     const roleBlocks = userRoles && userRoles.length > 0 ? userRoles.map((role) => (
-        <button key={role.id} className="button is-small is-outlined is-link is-rounded">
+        <button key={role.id} className="button is-small is-outlined is-link is-rounded mr-1">
             <NavLink to={"/roles/" + role.id}>{role.name}</NavLink>
         </button>
     )) : (<p className="subtitle is-7"> The user does not have any roles assigned</p>);
 
     const cardBlocks = userCards && userCards.length > 0 ? userCards.map((card) => (
-        <button key={card.id} className="button is-small is-outlined is-link is-rounded">
+        <button key={card.id} className="button is-small is-outlined is-link is-rounded mr-1">
             <NavLink to={"/cards/" + card.id}>{card.name}</NavLink>
         </button>
     )) : (<p className="subtitle is-7">The user does not have any roles assigned</p>);
@@ -86,15 +88,13 @@ function UserDetails({ userId }: UserDetailsProps) {
                             <p className="title is-4">{userDetails?.firstName + " " + userDetails?.lastName}</p>
                             <p className="subtitle is-6">{userDetails?.email}</p>
                         </div>
-                        <div style={{ float: "right" }}>
-                            <button className="button is-warning mr-1" onClick={() => setShowRoleAssignModal(true)}>Assign role</button>
-                        </div>
                     </div>
                 </div>
                 <br />
                 <div>
                     <p className="title is-6">Roles</p>
                     {roleBlocks}
+                    <button className="button is-small is-outlined is-primary is-rounded" onClick={() => setShowRoleAssignModal(true)}>+</button>
                 </div>
                 <br />
                 <div>

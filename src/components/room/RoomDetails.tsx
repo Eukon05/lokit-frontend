@@ -4,10 +4,11 @@ import useAuthSession from "../../hooks/useAuthSession";
 import { NavLink, useNavigate } from "react-router";
 import type { RoomDetailsProps } from "../../types/props/RoomDetailsProps";
 import type { RoomResponse } from "../../types/responses/room/RoomResponse";
-import { deleteRoom, disableRoom, enableRoom, getRoom } from "../../service/RoomService";
+import { assignRoomRole, deleteRoom, disableRoom, enableRoom, getRoom } from "../../service/RoomService";
 import type { RoleResponse } from "../../types/responses/role/RoleResponse";
 import { lookupRoles } from "../../service/RoleService";
 import ConfirmationModal from "../common/ConfirmationModal";
+import AssignRoleModal from "../common/AssignRoleModal";
 import toast from "react-hot-toast";
 
 function RoomDetails({ roomId }: RoomDetailsProps) {
@@ -16,6 +17,20 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
     const [roomDetails, setRoomDetails] = useState<RoomResponse>();
     const [roomRoles, setRoomRoles] = useState<RoleResponse[]>();
+    const [showRoleAssignModal, setShowRoleAssignModal] = useState<boolean>(false);
+    const [rolesRefreshKey, setRolesRefreshKey] = useState(0);
+
+    async function handleAssignRole(roleId: string) {
+        setShowRoleAssignModal(false);
+        try {
+            await assignRoomRole(roomId, roleId, auth.connectedUser.accessToken);
+            setRolesRefreshKey((previous) => previous + 1);
+            toast.success("Role assigned!");
+        }
+        catch (error) {
+            console.error("Failed to assign role " + roleId + " to room " + roomId, error);
+        }
+    }
 
     async function _handleEnable() {
         try {
@@ -75,12 +90,12 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
         return () => {
             isActive = false;
         };
-    }, [roomId])
+    }, [roomId, rolesRefreshKey])
 
     const tagStyle = "tag" + (roomDetails?.active ? " is-success" : " is-danger");
 
     const roleBlocks = roomRoles && roomRoles.length > 0 ? roomRoles.map((role) => (
-        <button key={role.id} className="button is-small is-outlined is-link is-rounded">
+        <button key={role.id} className="button is-small is-outlined is-link is-rounded mr-1">
             <NavLink to={"/roles/" + role.id}>{role.name}</NavLink>
         </button>
     )) : (<p className="subtitle is-7"> The room does not allow anyone to enter it</p>);
@@ -106,6 +121,7 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
                     <div>
                         <p className="title is-6">Roles</p>
                         {roleBlocks}
+                        <button className="button is-small is-outlined is-primary is-rounded" onClick={() => setShowRoleAssignModal(true)}>+</button>
                     </div>
                     <br />
                     <p>Created at: {new Date(roomDetails.createdAt).toUTCString()}</p>
@@ -114,6 +130,7 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
             </div>
             <div>
                 {showDeleteModal && <ConfirmationModal text="Are you sure?" subtext="This action cannot be undone!" onConfirm={_handleDelete} onCancel={() => setShowDeleteModal(false)} />}
+                {showRoleAssignModal && <AssignRoleModal excludeRoles={roomRoles} onConfirm={handleAssignRole} onCancel={() => setShowRoleAssignModal(false)} />}
             </div>
         </div>
     ) :
