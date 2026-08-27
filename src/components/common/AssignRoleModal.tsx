@@ -61,7 +61,10 @@ function AssignRoleModal({ excludeRoles, onConfirm, onCancel }: AssignRoleModalP
                     <p className="title is-4">Which role would you like to assign?</p>
                     {roleSelector}
                     <div className="is-flex is-flex-direction-row is-flex-justify-content-space-between">
-                        <button className="button is-danger mr-1" disabled={!selectedRoleId} onClick={() => onConfirm(selectedRoleId)}>Confirm</button>
+                        <button className="button is-danger mr-1" disabled={!selectedRoleId} onClick={() => {
+                            const selectedRole = roles?.find((role) => role.id === selectedRoleId);
+                            if (selectedRole) onConfirm(selectedRole);
+                        }}>Confirm</button>
                         <button className="button" onClick={onCancel}>Cancel</button>
                     </div>
                 </div>

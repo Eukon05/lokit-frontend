@@ -19,17 +19,16 @@ function UserDetails({ userId }: UserDetailsProps) {
     const [userCards, setUserCards] = useState<CardResponse[]>();
     const [showRoleAssignModal, setShowRoleAssignModal] = useState<boolean>(false);
     const [roleToRemove, setRoleToRemove] = useState<RoleResponse>();
-    const [rolesRefreshKey, setRolesRefreshKey] = useState(0);
 
-    async function handleAssignRole(roleId: string) {
+    async function handleAssignRole(role: RoleResponse) {
         setShowRoleAssignModal(false);
         try {
-            await assignUserRole(userId, roleId, auth.connectedUser.accessToken);
-            setRolesRefreshKey((previous) => previous + 1);
+            await assignUserRole(userId, role.id, auth.connectedUser.accessToken);
+            setUserRoles((previous) => [...(previous ?? []), role]);
             toast.success("Role assigned!");
         }
         catch (error) {
-            console.error("Failed to assign role " + roleId, error);
+            console.error("Failed to assign role " + role.id, error);
         }
     }
 
@@ -39,7 +38,7 @@ function UserDetails({ userId }: UserDetailsProps) {
         try {
             await removeUserRole(userId, roleToRemove.id, auth.connectedUser.accessToken);
             setRoleToRemove(undefined);
-            setRolesRefreshKey((previous) => previous + 1);
+            setUserRoles((previous) => previous?.filter((role) => role.id !== roleToRemove.id));
             toast.success("Role removed!");
         }
         catch (error) {
@@ -81,7 +80,7 @@ function UserDetails({ userId }: UserDetailsProps) {
         return () => {
             isActive = false;
         };
-    }, [userId, rolesRefreshKey])
+    }, [userId])
 
     const roleBlocks = userRoles && userRoles.length > 0 ? (
         <div className="field is-grouped is-grouped-multiline">

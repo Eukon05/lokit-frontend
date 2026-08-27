@@ -19,17 +19,16 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
     const [roomRoles, setRoomRoles] = useState<RoleResponse[]>();
     const [showRoleAssignModal, setShowRoleAssignModal] = useState<boolean>(false);
     const [roleToRemove, setRoleToRemove] = useState<RoleResponse>();
-    const [rolesRefreshKey, setRolesRefreshKey] = useState(0);
 
-    async function handleAssignRole(roleId: string) {
+    async function handleAssignRole(role: RoleResponse) {
         setShowRoleAssignModal(false);
         try {
-            await assignRoomRole(roomId, roleId, auth.connectedUser.accessToken);
-            setRolesRefreshKey((previous) => previous + 1);
+            await assignRoomRole(roomId, role.id, auth.connectedUser.accessToken);
+            setRoomRoles((previous) => [...(previous ?? []), role]);
             toast.success("Role assigned!");
         }
         catch (error) {
-            console.error("Failed to assign role " + roleId + " to room " + roomId, error);
+            console.error("Failed to assign role " + role.id + " to room " + roomId, error);
         }
     }
 
@@ -39,7 +38,7 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
         try {
             await removeRoomRole(roomId, roleToRemove.id, auth.connectedUser.accessToken);
             setRoleToRemove(undefined);
-            setRolesRefreshKey((previous) => previous + 1);
+            setRoomRoles((previous) => previous?.filter((role) => role.id !== roleToRemove.id));
             toast.success("Role removed!");
         }
         catch (error) {
@@ -105,7 +104,7 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
         return () => {
             isActive = false;
         };
-    }, [roomId, rolesRefreshKey])
+    }, [roomId])
 
     const tagStyle = "tag" + (roomDetails?.active ? " is-success" : " is-danger");
 
