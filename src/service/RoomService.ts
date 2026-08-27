@@ -30,6 +30,10 @@ export async function assignRoomRole(roomId: string, roleId: string, accessToken
     await makePost<null>(ROOM_ENDPOINT + roomId + "/acl/" + roleId, null, accessToken);
 }
 
+export async function removeRoomRole(roomId: string, roleId: string, accessToken: string): Promise<void> {
+    await makeDelete(ROOM_ENDPOINT + roomId + "/acl/" + roleId, accessToken);
+}
+
 export async function createRoom(body: CreateRoomRequest, accessToken: string): Promise<string> {
     return (await makePost<CreateRoomRequest>(ALL_ROOMS_ENDPOINT, body, accessToken));
 }

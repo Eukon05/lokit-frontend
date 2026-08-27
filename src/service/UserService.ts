@@ -1,4 +1,4 @@
-import { makeGet, makePost, SERVER_URL } from "./RequestHelper";
+import { makeDelete, makeGet, makePost, SERVER_URL } from "./RequestHelper";
 import type { UsersPageResponse } from "../types/responses/user/UsersPageResponse";
 import type { UserResponse } from "../types/responses/user/UserResponse";
 import type { UserRolesResponse } from "../types/responses/user/UserRolesResponse";
@@ -26,4 +26,8 @@ export async function getUserRoles(userId: string, accessToken: string): Promise
 
 export async function assignUserRole(userId: string, roleId: string, accessToken: string): Promise<void> {
     await makePost<null>(USER_ENDPOINT + userId + "/roles/" + roleId, null, accessToken);
+}
+
+export async function removeUserRole(userId: string, roleId: string, accessToken: string): Promise<void> {
+    await makeDelete(USER_ENDPOINT + userId + "/roles/" + roleId, accessToken);
 }

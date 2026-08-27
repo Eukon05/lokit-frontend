@@ -4,7 +4,7 @@ import useAuthSession from "../../hooks/useAuthSession";
 import { NavLink, useNavigate } from "react-router";
 import type { RoomDetailsProps } from "../../types/props/RoomDetailsProps";
 import type { RoomResponse } from "../../types/responses/room/RoomResponse";
-import { assignRoomRole, deleteRoom, disableRoom, enableRoom, getRoom } from "../../service/RoomService";
+import { assignRoomRole, deleteRoom, disableRoom, enableRoom, getRoom, removeRoomRole } from "../../service/RoomService";
 import type { RoleResponse } from "../../types/responses/role/RoleResponse";
 import { lookupRoles } from "../../service/RoleService";
 import ConfirmationModal from "../common/ConfirmationModal";
@@ -18,6 +18,7 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
     const [roomDetails, setRoomDetails] = useState<RoomResponse>();
     const [roomRoles, setRoomRoles] = useState<RoleResponse[]>();
     const [showRoleAssignModal, setShowRoleAssignModal] = useState<boolean>(false);
+    const [roleToRemove, setRoleToRemove] = useState<RoleResponse>();
     const [rolesRefreshKey, setRolesRefreshKey] = useState(0);
 
     async function handleAssignRole(roleId: string) {
@@ -29,6 +30,20 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
         }
         catch (error) {
             console.error("Failed to assign role " + roleId + " to room " + roomId, error);
+        }
+    }
+
+    async function handleRemoveRole() {
+        if (!roleToRemove) return;
+
+        try {
+            await removeRoomRole(roomId, roleToRemove.id, auth.connectedUser.accessToken);
+            setRoleToRemove(undefined);
+            setRolesRefreshKey((previous) => previous + 1);
+            toast.success("Role removed!");
+        }
+        catch (error) {
+            console.error("Failed to remove role " + roleToRemove.id + " from room " + roomId, error);
         }
     }
 
@@ -94,11 +109,18 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
 
     const tagStyle = "tag" + (roomDetails?.active ? " is-success" : " is-danger");
 
-    const roleBlocks = roomRoles && roomRoles.length > 0 ? roomRoles.map((role) => (
-        <button key={role.id} className="button is-small is-outlined is-link is-rounded mr-1">
-            <NavLink to={"/roles/" + role.id}>{role.name}</NavLink>
-        </button>
-    )) : (<p className="subtitle is-7"> The room does not allow anyone to enter it</p>);
+    const roleBlocks = roomRoles && roomRoles.length > 0 ? (
+        <div className="field is-grouped is-grouped-multiline">
+            {roomRoles.map((role) => (
+                <div key={role.id} className="control">
+                    <div className="tags has-addons">
+                        <NavLink className="tag is-link" to={"/roles/" + role.id}>{role.name}</NavLink>
+                        <button className="tag is-delete" aria-label={"Remove " + role.name} onClick={() => setRoleToRemove(role)}></button>
+                    </div>
+                </div>
+            ))}
+        </div>
+    ) : (<p className="subtitle is-7"> The room does not allow anyone to enter it</p>);
 
     const render = roomDetails ? (
         <div>
@@ -131,6 +153,7 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
             <div>
                 {showDeleteModal && <ConfirmationModal text="Are you sure?" subtext="This action cannot be undone!" onConfirm={_handleDelete} onCancel={() => setShowDeleteModal(false)} />}
                 {showRoleAssignModal && <AssignRoleModal excludeRoles={roomRoles} onConfirm={handleAssignRole} onCancel={() => setShowRoleAssignModal(false)} />}
+                {roleToRemove && <ConfirmationModal text={"Remove " + roleToRemove.name + "?"} subtext="The role will no longer be allowed to enter this room." onConfirm={handleRemoveRole} onCancel={() => setRoleToRemove(undefined)} />}
             </div>
         </div>
     ) :

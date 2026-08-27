@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { assignUserRole, getUser, getUserRoles } from "../../service/UserService";
+import { assignUserRole, getUser, getUserRoles, removeUserRole } from "../../service/UserService";
 import type { UserDetailsProps } from "../../types/props/UserDetailsProps";
 import type { UserResponse } from "../../types/responses/user/UserResponse";
 import useAuthSession from "../../hooks/useAuthSession";
@@ -10,6 +10,7 @@ import { getUserCards, lookupCards } from "../../service/CardService";
 import { NavLink } from "react-router";
 import toast from "react-hot-toast";
 import AssignRoleModal from "../common/AssignRoleModal";
+import ConfirmationModal from "../common/ConfirmationModal";
 
 function UserDetails({ userId }: UserDetailsProps) {
     const auth = useAuthSession();
@@ -17,6 +18,7 @@ function UserDetails({ userId }: UserDetailsProps) {
     const [userRoles, setUserRoles] = useState<RoleResponse[]>();
     const [userCards, setUserCards] = useState<CardResponse[]>();
     const [showRoleAssignModal, setShowRoleAssignModal] = useState<boolean>(false);
+    const [roleToRemove, setRoleToRemove] = useState<RoleResponse>();
     const [rolesRefreshKey, setRolesRefreshKey] = useState(0);
 
     async function handleAssignRole(roleId: string) {
@@ -28,6 +30,20 @@ function UserDetails({ userId }: UserDetailsProps) {
         }
         catch (error) {
             console.error("Failed to assign role " + roleId, error);
+        }
+    }
+
+    async function handleRemoveRole() {
+        if (!roleToRemove) return;
+
+        try {
+            await removeUserRole(userId, roleToRemove.id, auth.connectedUser.accessToken);
+            setRoleToRemove(undefined);
+            setRolesRefreshKey((previous) => previous + 1);
+            toast.success("Role removed!");
+        }
+        catch (error) {
+            console.error("Failed to remove role " + roleToRemove.id, error);
         }
     }
 
@@ -67,17 +83,28 @@ function UserDetails({ userId }: UserDetailsProps) {
         };
     }, [userId, rolesRefreshKey])
 
-    const roleBlocks = userRoles && userRoles.length > 0 ? userRoles.map((role) => (
-        <button key={role.id} className="button is-small is-outlined is-link is-rounded mr-1">
-            <NavLink to={"/roles/" + role.id}>{role.name}</NavLink>
-        </button>
-    )) : (<p className="subtitle is-7"> The user does not have any roles assigned</p>);
+    const roleBlocks = userRoles && userRoles.length > 0 ? (
+        <div className="field is-grouped is-grouped-multiline">
+            {userRoles.map((role) => (
+                <div key={role.id} className="control">
+                    <div className="tags has-addons">
+                        <NavLink className="tag is-link" to={"/roles/" + role.id}>{role.name}</NavLink>
+                        <button className="tag is-delete" aria-label={"Remove " + role.name} onClick={() => setRoleToRemove(role)}></button>
+                    </div>
+                </div>
+            ))}
+        </div>
+    ) : (<p className="subtitle is-7"> The user does not have any roles assigned</p>);
 
-    const cardBlocks = userCards && userCards.length > 0 ? userCards.map((card) => (
-        <button key={card.id} className="button is-small is-outlined is-link is-rounded mr-1">
-            <NavLink to={"/cards/" + card.id}>{card.name}</NavLink>
-        </button>
-    )) : (<p className="subtitle is-7">The user does not have any roles assigned</p>);
+    const cardBlocks = userCards && userCards.length > 0 ? (
+        <div className="field is-grouped is-grouped-multiline">
+            {userCards.map((card) => (
+                <div key={card.id} className="control">
+                    <NavLink className="tag is-link" to={"/cards/" + card.id}>{card.name}</NavLink>
+                </div>
+            ))}
+        </div>
+    ) : (<p className="subtitle is-7">The user does not have any roles assigned</p>);
 
     const render = userDetails ? (
         <div className="card">
@@ -104,6 +131,7 @@ function UserDetails({ userId }: UserDetailsProps) {
             </div>
             <div>
                 {showRoleAssignModal && <AssignRoleModal excludeRoles={userRoles} onConfirm={handleAssignRole} onCancel={() => setShowRoleAssignModal(false)} />}
+                {roleToRemove && <ConfirmationModal text={"Remove " + roleToRemove.name + "?"} subtext="The role will no longer be assigned to this user." onConfirm={handleRemoveRole} onCancel={() => setRoleToRemove(undefined)} />}
             </div>
         </div>
     ) :
