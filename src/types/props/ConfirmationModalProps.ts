@@ -1,6 +1,10 @@
+import type { ReactNode } from "react"
+
 export type ConfirmationModalProps = {
     text: string,
-    subtext: string,
+    subtext?: string,
     onConfirm: () => void,
-    onCancel: () => void
+    onCancel: () => void,
+    confirmDisabled?: boolean,
+    children?: ReactNode | ReactNode[]
 }

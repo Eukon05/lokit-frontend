@@ -4,12 +4,18 @@ import { useLocation } from 'react-router';
 import type { RoomResponse } from '../../types/responses/room/RoomResponse';
 import { getAllRooms } from '../../service/RoomService';
 import type { AssignDeviceRoomModalProps } from '../../types/props/AssignDeviceRoomModalProps';
+import ConfirmationModal from '../common/ConfirmationModal';
 
 function AssignDeviceRoomModal({ onConfirm, onCancel }: AssignDeviceRoomModalProps) {
     const auth = useAuthSession();
     const location = useLocation();
     const [rooms, setRooms] = useState<RoomResponse[]>();
     const [selectedRoomId, setSelectedRoomId] = useState("");
+
+    function _handleConfirm() {
+        const selectedRoom = rooms?.find((room) => room.id === selectedRoomId);
+        if (selectedRoom) onConfirm(selectedRoom);
+    }
 
     useEffect(() => {
         let isActive = true;
@@ -34,7 +40,7 @@ function AssignDeviceRoomModal({ onConfirm, onCancel }: AssignDeviceRoomModalPro
         };
     }, [auth.connectedUser.accessToken, location.state?.refreshRoles])
 
-    const roomSelector = rooms && rooms.length > 0 ? (
+    const roomSelector = rooms && rooms.length > 0 && (
         <div className="field">
             <div className="control">
                 <div className='select'>
@@ -48,25 +54,17 @@ function AssignDeviceRoomModal({ onConfirm, onCancel }: AssignDeviceRoomModalPro
                 </div>
             </div>
         </div>
-    ) : <p>There are no rooms to assign</p>
+    );
 
     return (
-        <div className="modal is-active">
-            <div className="modal-background"></div>
-            <div className="modal-content">
-                <div className="box">
-                    <p className="title is-4">Which room would you like to assign?</p>
-                    {roomSelector}
-                    <div className="is-flex is-flex-direction-row is-flex-justify-content-space-between">
-                        <button className="button is-danger mr-1" disabled={!selectedRoomId} onClick={() => {
-                            const selectedRoom = rooms?.find((room) => room.id === selectedRoomId);
-                            if (selectedRoom) onConfirm(selectedRoom);
-                        }}>Confirm</button>
-                        <button className="button" onClick={onCancel}>Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </div >
+        <ConfirmationModal
+            text="Which room would you like to assign?"
+            subtext={roomSelector ? undefined : "There are no rooms left to assign"}
+            children={roomSelector}
+            onConfirm={_handleConfirm}
+            onCancel={onCancel} 
+            confirmDisabled={!roomSelector}
+        />
     )
 }
 
