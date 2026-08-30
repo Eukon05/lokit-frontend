@@ -111,8 +111,8 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
     }, [deviceId])
 
     const hasAssignedRoom = Boolean(deviceDetails?.roomId && deviceDetails.roomId.trim().length > 0);
-    const tagStyle = "tag" + (deviceDetails?.hasActiveToken ? " is-success" : " is-danger");
-    const tagText = deviceDetails?.hasActiveToken ? "Active" : "Disabled";
+    const tagStyle = "tag" + (!hasAssignedRoom ? " is-dark" : deviceDetails?.hasActiveToken ? " is-success" : " is-danger");
+    const tagText = !hasAssignedRoom ? "Unassigned" : deviceDetails?.hasActiveToken ? "Active" : "Disabled";
 
     const deviceTokenDiv = deviceToken && <div className="message">
         <br />
