@@ -29,3 +29,11 @@ export async function removeToken(deviceId: string, accessToken: string): Promis
 export async function createDevice(body: CreateDeviceRequest, accessToken: string): Promise<string> {
     return (await makePost<CreateDeviceRequest>(ALL_DEVICES_ENDPOINT, body, accessToken));
 }
+
+export async function assignDeviceRoom(deviceId: string, roomId: string, accessToken: string): Promise<void> {
+    await makePost<null>(DEVICE_ENDPOINT + deviceId + "/room/" + roomId, null, accessToken);
+}
+
+export async function removeDeviceRoom(deviceId: string, accessToken: string): Promise<void> {
+    await makeDelete(DEVICE_ENDPOINT + deviceId + "/room", accessToken);
+}
