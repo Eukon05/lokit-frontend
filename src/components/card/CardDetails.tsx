@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { deleteCard, disableCard, enableCard, getCard } from "../../service/CardService";
+import { deleteCard, disableCard, enableCard, getCard, updateCard } from "../../service/CardService";
 import { getUser } from "../../service/UserService";
 import type { CardDetailsProps } from "../../types/props/CardDetailsProps";
 import useAuthSession from "../../hooks/useAuthSession";
@@ -7,12 +7,14 @@ import type { CardResponse } from "../../types/responses/card/CardResponse";
 import type { UserResponse } from "../../types/responses/user/UserResponse";
 import { NavLink, useNavigate } from "react-router";
 import ConfirmationModal from "../common/ConfirmationModal";
+import EditDetailsModal from "../common/EditDetailsModal";
 import toast from "react-hot-toast";
 
 function CardDetails({ cardId }: CardDetailsProps) {
     const auth = useAuthSession();
     const navigate = useNavigate();
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+    const [showEditModal, setShowEditModal] = useState<boolean>(false);
     const [cardDetails, setCardDetails] = useState<CardResponse>();
     const [userDetails, setUserDetails] = useState<UserResponse>();
 
@@ -46,6 +48,29 @@ function CardDetails({ cardId }: CardDetailsProps) {
         }
         catch (error) {
             console.error("Failed to delete card " + cardId, error);
+        }
+    }
+
+    async function _handleEdit(changes: { name?: string, description?: string }) {
+        try {
+            const updatePayload = { name: changes.name };
+
+            if (updatePayload.name === undefined || updatePayload.name === "") {
+                setShowEditModal(false);
+                return;
+            }
+
+            await updateCard(cardId, updatePayload, auth.connectedUser.accessToken);
+            setCardDetails((previous) => previous ? {
+                ...previous,
+                ...(updatePayload.name !== undefined ? { name: updatePayload.name } : {}),
+                updatedAt: new Date().toISOString()
+            } : previous);
+            setShowEditModal(false);
+            toast.success("Card updated!");
+        }
+        catch (error) {
+            console.error("Failed to update card " + cardId, error);
         }
     }
 
@@ -87,6 +112,7 @@ function CardDetails({ cardId }: CardDetailsProps) {
                             </div>
                             <div style={{ float: "right" }}>
                                 <button className="button is-warning mr-1" onClick={cardDetails.active ? _handleDisable : _handleEnable}>{cardDetails.active ? "Disable" : "Enable"}</button>
+                                <button className="button is-info mr-1" onClick={() => setShowEditModal(true)}>Edit</button>
                                 <button className="button is-danger" onClick={() => setShowDeleteModal(true)}>Delete</button>
                             </div>
                         </div>
@@ -101,7 +127,8 @@ function CardDetails({ cardId }: CardDetailsProps) {
                     </div>
                 </div>
                 <div>
-                    {showDeleteModal && <ConfirmationModal text="Are you sure?" subtext="This action cannot be undone!" onConfirm={_handleDelete} onCancel={() => setShowDeleteModal(false)}/>}
+                    {showDeleteModal && <ConfirmationModal text="Are you sure?" subtext="This action cannot be undone!" onConfirm={_handleDelete} onCancel={() => setShowDeleteModal(false)}/>} 
+                    {showEditModal && <EditDetailsModal title="Edit card" initialName={cardDetails.name} includeDescription={false} onConfirm={_handleEdit} onCancel={() => setShowEditModal(false)} />}
                 </div>
             </div>
         </div>

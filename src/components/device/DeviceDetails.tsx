@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { deleteDevice, removeToken, assignToken, getDevice, assignDeviceRoom, removeDeviceRoom } from "../../service/DeviceService";
+import { deleteDevice, removeToken, assignToken, getDevice, assignDeviceRoom, removeDeviceRoom, updateDevice } from "../../service/DeviceService";
 import { getRoom } from "../../service/RoomService";
 import type { DeviceDetailsProps } from "../../types/props/DeviceDetailsProps";
 import type { DeviceResponse } from "../../types/responses/device/DeviceResponse";
@@ -7,6 +7,7 @@ import type { RoomResponse } from "../../types/responses/room/RoomResponse";
 import useAuthSession from "../../hooks/useAuthSession";
 import { NavLink, useNavigate } from "react-router";
 import ConfirmationModal from "../common/ConfirmationModal";
+import EditDetailsModal from "../common/EditDetailsModal";
 import toast from "react-hot-toast";
 import AssignDeviceRoomModal from "./AssignDeviceRoomModal";
 
@@ -14,6 +15,7 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
     const auth = useAuthSession();
     const navigate = useNavigate();
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+    const [showEditModal, setShowEditModal] = useState<boolean>(false);
     const [showRevokeModal, setShowRevokeModal] = useState<boolean>(false);
     const [showAssignRoomModal, setShowAssignRoomModal] = useState<boolean>(false);
     const [showRemoveRoomModal, setShowRemoveRoomModal] = useState<boolean>(false);
@@ -56,6 +58,28 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
         }
         catch (error) {
             console.error("Failed to delete device " + deviceId, error);
+        }
+    }
+
+    async function _handleEdit(changes: { name?: string, description?: string }) {
+        try {
+            if (Object.keys(changes).length === 0) {
+                setShowEditModal(false);
+                return;
+            }
+
+            await updateDevice(deviceId, changes, auth.connectedUser.accessToken);
+            setDeviceDetails((previous) => previous ? {
+                ...previous,
+                ...(changes.name !== undefined ? { name: changes.name } : {}),
+                ...(changes.description !== undefined ? { description: changes.description } : {}),
+                updatedAt: new Date().toISOString()
+            } : previous);
+            setShowEditModal(false);
+            toast.success("Device updated!");
+        }
+        catch (error) {
+            console.error("Failed to update device " + deviceId, error);
         }
     }
 
@@ -138,6 +162,7 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
                             <div style={{ float: "right" }}>
                                 <button className="button is-warning mr-1" onClick={hasAssignedRoom ? () => setShowRemoveRoomModal(true) : () => setShowAssignRoomModal(true)}>{hasAssignedRoom ? "Remove room" : "Assign room"}</button>
                                 <button className="button is-warning mr-1" onClick={deviceDetails.hasActiveToken ? () => setShowRevokeModal(true) : _handleAssignToken}>{deviceDetails.hasActiveToken ? "Revoke token" : "Assign token"}</button>
+                                <button className="button is-info mr-1" onClick={() => setShowEditModal(true)}>Edit</button>
                                 <button className="button is-danger" onClick={() => setShowDeleteModal(true)}>Delete</button>
                             </div>
                         </div>
@@ -156,6 +181,7 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
             </div>
             <div>
                 {showDeleteModal && <ConfirmationModal text="Are you sure?" subtext="This action cannot be undone!" onConfirm={_handleDelete} onCancel={() => setShowDeleteModal(false)} />}
+                {showEditModal && <EditDetailsModal title="Edit device" initialName={deviceDetails.name} initialDescription={deviceDetails.description} onConfirm={_handleEdit} onCancel={() => setShowEditModal(false)} />}
             </div>
             <div>
                 {showRevokeModal && <ConfirmationModal text="Are you sure?" subtext="Revoking the token will render the device unusable, and will require uploading the new token to it manually!" onConfirm={_handleRemoveToken} onCancel={() => setShowRevokeModal(false)} />}

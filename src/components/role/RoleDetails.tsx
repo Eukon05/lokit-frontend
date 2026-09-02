@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
-import { deleteRole, disableRole, enableRole, getRole } from "../../service/RoleService";
+import { deleteRole, disableRole, enableRole, getRole, updateRole } from "../../service/RoleService";
 import type { RoleDetailsProps } from "../../types/props/RoleDetailsProps";
 import type { RoleResponse } from "../../types/responses/role/RoleResponse";
 import useAuthSession from "../../hooks/useAuthSession";
 import { useNavigate } from "react-router";
 import ConfirmationModal from "../common/ConfirmationModal";
+import EditDetailsModal from "../common/EditDetailsModal";
 import toast from "react-hot-toast";
 
 function RoleDetails({ roleId }: RoleDetailsProps) {
     const auth = useAuthSession();
     const navigate = useNavigate();
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+    const [showEditModal, setShowEditModal] = useState<boolean>(false);
     const [roleDetails, setRoleDetails] = useState<RoleResponse>();
 
     async function _handleEnable() {
@@ -43,6 +45,28 @@ function RoleDetails({ roleId }: RoleDetailsProps) {
         }
         catch (error) {
             console.error("Failed to delete role " + roleId, error);
+        }
+    }
+
+    async function _handleEdit(changes: { name?: string, description?: string }) {
+        try {
+            if (Object.keys(changes).length === 0) {
+                setShowEditModal(false);
+                return;
+            }
+
+            await updateRole(roleId, changes, auth.connectedUser.accessToken);
+            setRoleDetails((previous) => previous ? {
+                ...previous,
+                ...(changes.name !== undefined ? { name: changes.name } : {}),
+                ...(changes.description !== undefined ? { description: changes.description } : {}),
+                updatedAt: new Date().toISOString()
+            } : previous);
+            setShowEditModal(false);
+            toast.success("Role updated!");
+        }
+        catch (error) {
+            console.error("Failed to update role " + roleId, error);
         }
     }
 
@@ -82,6 +106,7 @@ function RoleDetails({ roleId }: RoleDetailsProps) {
                             </div>
                             <div style={{ float: "right" }}>
                                 <button className="button is-warning mr-1" onClick={roleDetails.active ? _handleDisable : _handleEnable}>{roleDetails.active ? "Disable" : "Enable"}</button>
+                                <button className="button is-info mr-1" onClick={() => setShowEditModal(true)}>Edit</button>
                                 <button className="button is-danger" onClick={() => setShowDeleteModal(true)}>Delete</button>
                             </div>
                         </div>
@@ -94,6 +119,7 @@ function RoleDetails({ roleId }: RoleDetailsProps) {
             </div>
             <div>
                 {showDeleteModal && <ConfirmationModal text="Are you sure?" subtext="This action cannot be undone!" onConfirm={_handleDelete} onCancel={() => setShowDeleteModal(false)} />}
+                {showEditModal && <EditDetailsModal title="Edit role" initialName={roleDetails.name} initialDescription={roleDetails.description} onConfirm={_handleEdit} onCancel={() => setShowEditModal(false)} />}
             </div>
         </div>
     ) :

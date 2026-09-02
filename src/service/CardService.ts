@@ -1,9 +1,10 @@
-import { makePost, makeDelete, makeGet, SERVER_URL } from "./RequestHelper";
+import { makePost, makeDelete, makeGet, makePut, SERVER_URL } from "./RequestHelper";
 import type { CardPageResponse } from "../types/responses/card/CardPageResponse";
 import type { CardResponse } from "../types/responses/card/CardResponse";
 import type { LookupCardsRequest } from "../types/requests/card/LookupCardsRequest";
 import type { UserCardsResponse } from "../types/responses/user/UserCardsResponse";
 import type { CreateCardRequest } from "../types/requests/card/CreateCardRequest";
+import type { UpdateCardRequest } from "../types/requests/card/UpdateCardRequest";
 
 const ALL_CARDS_ENDPOINT = SERVER_URL + "/api/v1/card";
 const CARD_ENDPOINT = SERVER_URL + "/api/v1/card/";
@@ -40,4 +41,8 @@ export async function getUserCards(userId: string, accessToken: string): Promise
 
 export async function createCard(body: CreateCardRequest, accessToken: string): Promise<string> {
     return (await makePost<CreateCardRequest>(ALL_CARDS_ENDPOINT, body, accessToken));
+}
+
+export async function updateCard(cardId: string, body: UpdateCardRequest, accessToken: string): Promise<void> {
+    await makePut<UpdateCardRequest>(CARD_ENDPOINT + cardId, body, accessToken);
 }

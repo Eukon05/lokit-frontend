@@ -4,10 +4,11 @@ import useAuthSession from "../../hooks/useAuthSession";
 import { NavLink, useNavigate } from "react-router";
 import type { RoomDetailsProps } from "../../types/props/RoomDetailsProps";
 import type { RoomResponse } from "../../types/responses/room/RoomResponse";
-import { assignRoomRole, deleteRoom, disableRoom, enableRoom, getRoom, removeRoomRole } from "../../service/RoomService";
+import { assignRoomRole, deleteRoom, disableRoom, enableRoom, getRoom, removeRoomRole, updateRoom } from "../../service/RoomService";
 import type { RoleResponse } from "../../types/responses/role/RoleResponse";
 import { lookupRoles } from "../../service/RoleService";
 import ConfirmationModal from "../common/ConfirmationModal";
+import EditDetailsModal from "../common/EditDetailsModal";
 import AssignRoleModal from "../common/AssignRoleModal";
 import toast from "react-hot-toast";
 
@@ -15,6 +16,7 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
     const auth = useAuthSession();
     const navigate = useNavigate();
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+    const [showEditModal, setShowEditModal] = useState<boolean>(false);
     const [roomDetails, setRoomDetails] = useState<RoomResponse>();
     const [roomRoles, setRoomRoles] = useState<RoleResponse[]>();
     const [showRoleAssignModal, setShowRoleAssignModal] = useState<boolean>(false);
@@ -79,6 +81,28 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
         }
     }
 
+    async function _handleEdit(changes: { name?: string, description?: string }) {
+        try {
+            if (Object.keys(changes).length === 0) {
+                setShowEditModal(false);
+                return;
+            }
+
+            await updateRoom(roomId, changes, auth.connectedUser.accessToken);
+            setRoomDetails((previous) => previous ? {
+                ...previous,
+                ...(changes.name !== undefined ? { name: changes.name } : {}),
+                ...(changes.description !== undefined ? { description: changes.description } : {}),
+                updatedAt: new Date().toISOString()
+            } : previous);
+            setShowEditModal(false);
+            toast.success("Room updated!");
+        }
+        catch (error) {
+            console.error("Failed to update room " + roomId, error);
+        }
+    }
+
     useEffect(() => {
         let isActive = true;
 
@@ -133,6 +157,7 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
                             </div>
                             <div style={{ float: "right" }}>
                                 <button className="button is-warning mr-1" onClick={roomDetails.active ? _handleDisable : _handleEnable}>{roomDetails.active ? "Disable" : "Enable"}</button>
+                                <button className="button is-info mr-1" onClick={() => setShowEditModal(true)}>Edit</button>
                                 <button className="button is-danger" onClick={() => setShowDeleteModal(true)}>Delete</button>
                             </div>
                         </div>
@@ -151,6 +176,7 @@ function RoomDetails({ roomId }: RoomDetailsProps) {
             </div>
             <div>
                 {showDeleteModal && <ConfirmationModal text="Are you sure?" subtext="This action cannot be undone!" onConfirm={_handleDelete} onCancel={() => setShowDeleteModal(false)} />}
+                {showEditModal && <EditDetailsModal title="Edit room" initialName={roomDetails.name} initialDescription={roomDetails.description} onConfirm={_handleEdit} onCancel={() => setShowEditModal(false)} />}
                 {showRoleAssignModal && <AssignRoleModal excludeRoles={roomRoles} onConfirm={handleAssignRole} onCancel={() => setShowRoleAssignModal(false)} />}
                 {roleToRemove && <ConfirmationModal text={"Remove " + roleToRemove.name + "?"} subtext="The role will no longer be allowed to enter this room." onConfirm={handleRemoveRole} onCancel={() => setRoleToRemove(undefined)} />}
             </div>

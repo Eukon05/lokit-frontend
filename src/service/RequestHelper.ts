@@ -13,6 +13,7 @@ async function _handleResponseStatus(response: Response){
             throw new Error("Not found!");
         case 200:
         case 201:
+        case 204:
             return;
         case 409: {
             const err: ApiErrorResponse = await response.json() as ApiErrorResponse;
@@ -57,6 +58,17 @@ export async function makePost<T>(url: string, requestBody: T, accessToken: stri
         headers: { "Authorization": "Bearer " + accessToken, "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
         method: "POST",
+    });
+
+    _handleResponseStatus(response);
+    return await response.text();
+}
+
+export async function makePut<T>(url: string, requestBody: T, accessToken: string): Promise<string>{
+    const response = await fetch(url, {
+        headers: { "Authorization": "Bearer " + accessToken, "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
+        method: "PUT",
     });
 
     _handleResponseStatus(response);

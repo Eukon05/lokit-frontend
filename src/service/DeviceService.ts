@@ -1,7 +1,8 @@
-import { makeDelete, makeGet, makePost, SERVER_URL } from "./RequestHelper";
+import { makeDelete, makeGet, makePost, makePut, SERVER_URL } from "./RequestHelper";
 import type { DeviceResponse } from "../types/responses/device/DeviceResponse";
 import type { DevicePageResponse } from "../types/responses/device/DevicePageResponse";
 import type { CreateDeviceRequest } from "../types/requests/device/CreateDeviceRequest";
+import type { UpdateDeviceRequest } from "../types/requests/device/UpdateDeviceRequest";
 
 const ALL_DEVICES_ENDPOINT = SERVER_URL + "/api/v1/device"
 const DEVICE_ENDPOINT = SERVER_URL + "/api/v1/device/"
@@ -28,6 +29,10 @@ export async function removeToken(deviceId: string, accessToken: string): Promis
 
 export async function createDevice(body: CreateDeviceRequest, accessToken: string): Promise<string> {
     return (await makePost<CreateDeviceRequest>(ALL_DEVICES_ENDPOINT, body, accessToken));
+}
+
+export async function updateDevice(deviceId: string, body: UpdateDeviceRequest, accessToken: string): Promise<void> {
+    await makePut<UpdateDeviceRequest>(DEVICE_ENDPOINT + deviceId, body, accessToken);
 }
 
 export async function assignDeviceRoom(deviceId: string, roomId: string, accessToken: string): Promise<void> {

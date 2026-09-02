@@ -1,5 +1,5 @@
 import { Children } from "react";
-import type { SearchableListProps } from "../types/props/SearchableListProps";
+import type { SearchableListProps } from "../../types/props/SearchableListProps";
 
 
 function SearchableList({ title, query, onQueryChange, children, emptyText, button }: SearchableListProps) {

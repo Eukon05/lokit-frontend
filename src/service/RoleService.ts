@@ -1,8 +1,9 @@
-import { makeDelete, makeGet, makePost, SERVER_URL } from "./RequestHelper";
+import { makeDelete, makeGet, makePost, makePut, SERVER_URL } from "./RequestHelper";
 import type { RoleResponse } from "../types/responses/role/RoleResponse";
 import type { RolePageResponse } from "../types/responses/role/RolePageResponse";
 import type { LookupRolesRequest } from "../types/requests/role/LookupRolesRequest";
 import type { CreateRoleRequest } from "../types/requests/role/CreateRoleRequest";
+import type { UpdateRoleRequest } from "../types/requests/role/UpdateRoleRequest";
 
 const ALL_ROLES_ENDPOINT = SERVER_URL + "/api/v1/role";
 const ROLE_ENDPOINT = SERVER_URL + "/api/v1/role/";
@@ -34,4 +35,8 @@ export async function lookupRoles(dto: LookupRolesRequest, accessToken: string):
 
 export async function createRole(body: CreateRoleRequest, accessToken: string): Promise<string> {
     return (await makePost<CreateRoleRequest>(ALL_ROLES_ENDPOINT, body, accessToken));
+}
+
+export async function updateRole(roleId: string, body: UpdateRoleRequest, accessToken: string): Promise<void> {
+    await makePut<UpdateRoleRequest>(ROLE_ENDPOINT + roleId, body, accessToken);
 }
