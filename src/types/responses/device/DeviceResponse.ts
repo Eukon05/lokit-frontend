@@ -6,5 +6,6 @@ export type DeviceResponse = {
     hasActiveToken: boolean,
     roomId: string,
     createdAt: string,
-    updatedAt: string
+    updatedAt: string,
+    lastSeenAt?: string
 }

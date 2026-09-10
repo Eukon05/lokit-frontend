@@ -176,6 +176,7 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
                         <br />
                         <p>Created at: {new Date(deviceDetails.createdAt).toUTCString()}</p>
                         <p>Updated at: {new Date(deviceDetails.updatedAt).toUTCString()}</p>
+                        <p>Last seen online at: {deviceDetails.lastSeenAt ? new Date(deviceDetails.lastSeenAt).toUTCString() : "Never"}</p>
                     </div>
                 </div>
             </div>
