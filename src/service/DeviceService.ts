@@ -3,6 +3,8 @@ import type { DeviceResponse } from "../types/responses/device/DeviceResponse";
 import type { DevicePageResponse } from "../types/responses/device/DevicePageResponse";
 import type { CreateDeviceRequest } from "../types/requests/device/CreateDeviceRequest";
 import type { UpdateDeviceRequest } from "../types/requests/device/UpdateDeviceRequest";
+import type { DeviceCommandPageResponse } from "../types/responses/device/DeviceCommandPageResponse";
+import type { DeviceCommandResponse } from "../types/responses/device/DeviceCommandResponse";
 
 const ALL_DEVICES_ENDPOINT = SERVER_URL + "/api/v1/device"
 const DEVICE_ENDPOINT = SERVER_URL + "/api/v1/device/"
@@ -41,4 +43,8 @@ export async function assignDeviceRoom(deviceId: string, roomId: string, accessT
 
 export async function removeDeviceRoom(deviceId: string, accessToken: string): Promise<void> {
     await makeDelete(DEVICE_ENDPOINT + deviceId + "/room", accessToken);
+}
+
+export async function getDeviceCommands(deviceId: string, accessToken: string): Promise<DeviceCommandResponse[]> {
+    return (await makeGet<DeviceCommandPageResponse>(DEVICE_ENDPOINT + deviceId + '/commands', accessToken)).content;
 }

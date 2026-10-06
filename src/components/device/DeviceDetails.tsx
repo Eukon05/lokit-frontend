@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { deleteDevice, removeToken, assignToken, getDevice, assignDeviceRoom, removeDeviceRoom, updateDevice } from "../../service/DeviceService";
+import { deleteDevice, removeToken, assignToken, getDevice, assignDeviceRoom, removeDeviceRoom, updateDevice, getDeviceCommands } from "../../service/DeviceService";
 import { getRoom } from "../../service/RoomService";
 import type { DeviceDetailsProps } from "../../types/props/DeviceDetailsProps";
 import type { DeviceResponse } from "../../types/responses/device/DeviceResponse";
@@ -10,6 +10,8 @@ import ConfirmationModal from "../common/ConfirmationModal";
 import EditDetailsModal from "../common/EditDetailsModal";
 import toast from "react-hot-toast";
 import AssignDeviceRoomModal from "./AssignDeviceRoomModal";
+import DeviceCommands from "./DeviceCommands";
+import type { DeviceCommandResponse } from "../../types/responses/device/DeviceCommandResponse";
 
 function DeviceDetails({ deviceId }: DeviceDetailsProps) {
     const auth = useAuthSession();
@@ -20,6 +22,7 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
     const [showAssignRoomModal, setShowAssignRoomModal] = useState<boolean>(false);
     const [showRemoveRoomModal, setShowRemoveRoomModal] = useState<boolean>(false);
     const [deviceDetails, setDeviceDetails] = useState<DeviceResponse>();
+    const [deviceCommands, setDeviceCommands] = useState<DeviceCommandResponse[]>();
     const [roomDetails, setRoomDetails] = useState<RoomResponse>();
     const [deviceToken, setDeviceToken] = useState<string>();
 
@@ -117,10 +120,12 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
                 const device = await getDevice(deviceId, auth.connectedUser.accessToken);
                 const hasRoom = Boolean(device.roomId && device.roomId.trim().length > 0);
                 const room = hasRoom ? await getRoom(device.roomId, auth.connectedUser.accessToken) : undefined;
+                const commands = await getDeviceCommands(deviceId, auth.connectedUser.accessToken);
 
                 if (isActive) {
                     setDeviceDetails(device);
                     setRoomDetails(room);
+                    setDeviceCommands(commands);
                 }
             } catch (error) {
                 console.error("Failed to load device " + deviceId, error);
@@ -177,6 +182,8 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
                         <p>Created at: {new Date(deviceDetails.createdAt).toUTCString()}</p>
                         <p>Updated at: {new Date(deviceDetails.updatedAt).toUTCString()}</p>
                         <p>Last seen online at: {deviceDetails.lastSeenAt ? new Date(deviceDetails.lastSeenAt).toUTCString() : "Never"}</p>
+                        <hr/>
+                        <DeviceCommands deviceId={deviceId} commands={deviceCommands!}/>
                     </div>
                 </div>
             </div>
