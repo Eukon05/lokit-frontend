@@ -40,7 +40,7 @@ export async function makeGet<T>(url: string, accessToken: string): Promise<T> {
         headers: { Authorization: "Bearer " + accessToken }
     });
 
-    _handleResponseStatus(response);
+    await _handleResponseStatus(response);
     return response.json() as Promise<T>;
 }
 
@@ -50,7 +50,7 @@ export async function makeDelete(url: string, accessToken: string): Promise<void
         method: "DELETE"
     });
 
-    _handleResponseStatus(response);
+    await _handleResponseStatus(response);
 }
 
 export async function makePost<T>(url: string, requestBody: T, accessToken: string): Promise<string>{
@@ -60,7 +60,7 @@ export async function makePost<T>(url: string, requestBody: T, accessToken: stri
         method: "POST",
     });
 
-    _handleResponseStatus(response);
+    await _handleResponseStatus(response);
     return await response.text();
 }
 
@@ -71,6 +71,6 @@ export async function makePut<T>(url: string, requestBody: T, accessToken: strin
         method: "PUT",
     });
 
-    _handleResponseStatus(response);
+    await _handleResponseStatus(response);
     return await response.text();
 }

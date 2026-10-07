@@ -5,6 +5,7 @@ import type { CreateDeviceRequest } from "../types/requests/device/CreateDeviceR
 import type { UpdateDeviceRequest } from "../types/requests/device/UpdateDeviceRequest";
 import type { DeviceCommandPageResponse } from "../types/responses/device/DeviceCommandPageResponse";
 import type { DeviceCommandResponse } from "../types/responses/device/DeviceCommandResponse";
+import type { SendDeviceCommandRequest } from "../types/requests/device/SendDeviceCommandRequest";
 
 const ALL_DEVICES_ENDPOINT = SERVER_URL + "/api/v1/device"
 const DEVICE_ENDPOINT = SERVER_URL + "/api/v1/device/"
@@ -47,4 +48,8 @@ export async function removeDeviceRoom(deviceId: string, accessToken: string): P
 
 export async function getDeviceCommands(deviceId: string, accessToken: string): Promise<DeviceCommandResponse[]> {
     return (await makeGet<DeviceCommandPageResponse>(DEVICE_ENDPOINT + deviceId + '/commands', accessToken)).content;
+}
+
+export async function sendDeviceCommand(deviceId: string, body: SendDeviceCommandRequest, accessToken: string) : Promise<string> {
+    return (await makePost<SendDeviceCommandRequest>(DEVICE_ENDPOINT + deviceId + '/commands', body, accessToken));
 }
