@@ -39,7 +39,6 @@ function Cards() {
     }, [auth.connectedUser.accessToken, location.state?.refreshCards])
 
     const cardBlocks = cards.filter(card => card.id.toLowerCase().includes(query.toLowerCase()) || card.name.toLowerCase().includes(query.toLowerCase()) || card.userId.toLowerCase().includes(query.toLowerCase()))
-        .sort((o, t) => o.name.localeCompare(t.name))
         .map(card => (
             <div className="panel-block" key={card.id}>
                 <NavLink to={"/cards/" + card.id}>{card.name}</NavLink>

@@ -7,8 +7,9 @@ import type { DeviceCommandPageResponse } from "../types/responses/device/Device
 import type { DeviceCommandResponse } from "../types/responses/device/DeviceCommandResponse";
 import type { SendDeviceCommandRequest } from "../types/requests/device/SendDeviceCommandRequest";
 
-const ALL_DEVICES_ENDPOINT = SERVER_URL + "/api/v1/device"
-const DEVICE_ENDPOINT = SERVER_URL + "/api/v1/device/"
+const DEVICES_ENDPOINT: string = SERVER_URL + "/api/v1/device"
+const ALL_DEVICES_ENDPOINT: string = DEVICES_ENDPOINT + "?sort=name,asc"
+const DEVICE_ENDPOINT: string = SERVER_URL + "/api/v1/device/"
 
 export async function getAllDevices(accessToken: string): Promise<DeviceResponse[]> {
     return (await makeGet<DevicePageResponse>(ALL_DEVICES_ENDPOINT, accessToken)).content;
@@ -31,7 +32,7 @@ export async function removeToken(deviceId: string, accessToken: string): Promis
 }
 
 export async function createDevice(body: CreateDeviceRequest, accessToken: string): Promise<string> {
-    return (await makePost<CreateDeviceRequest>(ALL_DEVICES_ENDPOINT, body, accessToken));
+    return (await makePost<CreateDeviceRequest>(DEVICES_ENDPOINT, body, accessToken));
 }
 
 export async function updateDevice(deviceId: string, body: UpdateDeviceRequest, accessToken: string): Promise<void> {

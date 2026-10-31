@@ -24,8 +24,7 @@ function AssignRoleModal({ excludeRoles, onConfirm, onCancel }: AssignRoleModalP
             try {
                 let allRoles = await getAllRoles(auth.connectedUser.accessToken);
                 if (excludeRoles)
-                    allRoles = allRoles.filter(r => !excludeRoles.some(excludedRole => excludedRole.id === r.id))
-                        .sort((o, t) => o.name.localeCompare(t.name));
+                    allRoles = allRoles.filter(r => !excludeRoles.some(excludedRole => excludedRole.id === r.id));
 
                 if (isActive) {
                     setRoles(allRoles);
@@ -49,8 +48,7 @@ function AssignRoleModal({ excludeRoles, onConfirm, onCancel }: AssignRoleModalP
                 <div className='select'>
                     <select value={selectedRoleId}
                         onChange={(event) => setSelectedRoleId(event.target.value)}>
-                        {roles?.sort((o, t) => o.name.localeCompare(t.name))
-                            .map(u => {
+                        {roles?.map(u => {
                                 return <option key={u.id} value={u.id}>{u.name}</option>
                             })}
                     </select>

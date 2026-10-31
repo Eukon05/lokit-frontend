@@ -6,10 +6,11 @@ import type { UserCardsResponse } from "../types/responses/user/UserCardsRespons
 import type { CreateCardRequest } from "../types/requests/card/CreateCardRequest";
 import type { UpdateCardRequest } from "../types/requests/card/UpdateCardRequest";
 
-const ALL_CARDS_ENDPOINT = SERVER_URL + "/api/v1/card";
-const CARD_ENDPOINT = SERVER_URL + "/api/v1/card/";
-const CARD_LOOKUP_ENDPOINT = SERVER_URL + "/api/v1/card/lookup";
-const USER_ENDPOINT = SERVER_URL + "/api/v1/user/";
+const CARDS_ENDPOINT: string = SERVER_URL + "/api/v1/card";
+const ALL_CARDS_ENDPOINT: string = CARDS_ENDPOINT + "?sort=name,asc";
+const CARD_ENDPOINT: string = SERVER_URL + "/api/v1/card/";
+const CARD_LOOKUP_ENDPOINT: string = SERVER_URL + "/api/v1/card/lookup";
+const USER_ENDPOINT: string = SERVER_URL + "/api/v1/user/";
 
 export async function getAllCards(accessToken: string): Promise<CardResponse[]> {
     return (await makeGet<CardPageResponse>(ALL_CARDS_ENDPOINT, accessToken)).content;
@@ -40,7 +41,7 @@ export async function getUserCards(userId: string, accessToken: string): Promise
 }
 
 export async function createCard(body: CreateCardRequest, accessToken: string): Promise<string> {
-    return (await makePost<CreateCardRequest>(ALL_CARDS_ENDPOINT, body, accessToken));
+    return (await makePost<CreateCardRequest>(CARDS_ENDPOINT, body, accessToken));
 }
 
 export async function updateCard(cardId: string, body: UpdateCardRequest, accessToken: string): Promise<void> {

@@ -39,7 +39,6 @@ function Rooms() {
     }, [auth.connectedUser.accessToken, location.state?.refreshRooms])
 
     const roomBlocks = rooms.filter(room => room.name.toLowerCase().includes(query.toLowerCase()) || room.description.toLowerCase().includes(query.toLowerCase()))
-        .sort((o, t) => o.name.localeCompare(t.name))
         .map(room => (
             <div className="panel-block" key={room.id}>
                 <NavLink to={"/rooms/" + room.id}>{room.name}</NavLink>

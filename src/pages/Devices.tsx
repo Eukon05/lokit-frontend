@@ -39,7 +39,6 @@ function Devices() {
     }, [auth.connectedUser.accessToken, location.state?.refreshDevices])
 
     const deviceBlocks = devices.filter(device => device.name.toLowerCase().includes(query.toLowerCase()) || device.description.toLowerCase().includes(query.toLowerCase()) || device.physicalAddress.toLowerCase().includes(query.toLowerCase()) || device.roomId.toLowerCase().includes(query.toLowerCase()))
-        .sort((o, t) => o.name.localeCompare(t.name))
         .map(device => (
             <div className="panel-block" key={device.id}>
                 <NavLink to={"/devices/" + device.id}>{device.name}</NavLink>

@@ -22,7 +22,7 @@ function AssignDeviceRoomModal({ onConfirm, onCancel }: AssignDeviceRoomModalPro
 
         async function loadRooms() {
             try {
-                let allRooms = await getAllRooms(auth.connectedUser.accessToken);
+                const allRooms = await getAllRooms(auth.connectedUser.accessToken);
 
                 if (isActive) {
                     setRooms(allRooms);
@@ -46,8 +46,7 @@ function AssignDeviceRoomModal({ onConfirm, onCancel }: AssignDeviceRoomModalPro
                 <div className='select'>
                     <select value={selectedRoomId}
                         onChange={(event) => setSelectedRoomId(event.target.value)}>
-                        {rooms?.sort((o, t) => o.name.localeCompare(t.name))
-                            .map(u => {
+                        {rooms?.map(u => {
                                 return <option key={u.id} value={u.id}>{u.name}</option>
                             })}
                     </select>

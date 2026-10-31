@@ -55,7 +55,6 @@ function Users() {
     }, [auth.connectedUser.accessToken, location.state?.refreshUsers])
 
     const userBlocks = users.filter(user => user.firstName.toLowerCase().includes(query.toLowerCase()) || user.lastName.toLowerCase().includes(query.toLowerCase()))
-        .sort((o, t) => o.firstName.localeCompare(t.firstName))
         .map(user => (
             <div className={"panel-block"} key={user.id}>
                 <NavLink to={"/users/" + user.id}>{user.firstName} {user.lastName}</NavLink>

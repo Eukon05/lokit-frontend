@@ -39,7 +39,6 @@ function Roles() {
     }, [auth.connectedUser.accessToken, location.state?.refreshRoles])
 
     const roleBlocks = roles.filter(role => role.name.toLowerCase().includes(query.toLowerCase()) || role.description.toLowerCase().includes(query.toLowerCase()))
-        .sort((o, t) => o.name.localeCompare(t.name))
         .map(role => (
             <div className="panel-block" key={role.id}>
                 <NavLink to={"/roles/" + role.id}>{role.name}</NavLink>

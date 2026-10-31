@@ -116,8 +116,7 @@ function CreateCardForm() {
                                 <div className="control">
                                     <div className='select'>
                                         <select ref={userIdInput}>
-                                            {users?.sort((o, t) => o.firstName.localeCompare(t.firstName))
-                                            .map(u => {
+                                            {users?.map(u => {
                                                 return <option key={u.id} value={u.id}>{u.firstName + " " + u.lastName + "(" + u.email + ")"}</option>
                                             })}
                                         </select>

@@ -4,8 +4,9 @@ import type { RoomResponse } from "../types/responses/room/RoomResponse";
 import type { CreateRoomRequest } from "../types/requests/room/CreateRoomRequest";
 import type { UpdateRoomRequest } from "../types/requests/room/UpdateRoomRequest";
 
-const ALL_ROOMS_ENDPOINT = SERVER_URL + "/api/v1/room"
-const ROOM_ENDPOINT = SERVER_URL + "/api/v1/room/"
+const ROOMS_ENDPOINT: string = SERVER_URL + "/api/v1/room"
+const ALL_ROOMS_ENDPOINT: string = ROOMS_ENDPOINT + "?sort=name,asc"
+const ROOM_ENDPOINT: string = SERVER_URL + "/api/v1/room/"
 
 export async function getAllRooms(accessToken: string): Promise<RoomResponse[]> {
     return (await makeGet<RoomPageResponse>(ALL_ROOMS_ENDPOINT, accessToken)).content;
@@ -36,7 +37,7 @@ export async function removeRoomRole(roomId: string, roleId: string, accessToken
 }
 
 export async function createRoom(body: CreateRoomRequest, accessToken: string): Promise<string> {
-    return (await makePost<CreateRoomRequest>(ALL_ROOMS_ENDPOINT, body, accessToken));
+    return (await makePost<CreateRoomRequest>(ROOMS_ENDPOINT, body, accessToken));
 }
 
 export async function updateRoom(roomId: string, body: UpdateRoomRequest, accessToken: string): Promise<void> {

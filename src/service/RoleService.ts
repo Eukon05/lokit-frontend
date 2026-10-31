@@ -5,9 +5,10 @@ import type { LookupRolesRequest } from "../types/requests/role/LookupRolesReque
 import type { CreateRoleRequest } from "../types/requests/role/CreateRoleRequest";
 import type { UpdateRoleRequest } from "../types/requests/role/UpdateRoleRequest";
 
-const ALL_ROLES_ENDPOINT = SERVER_URL + "/api/v1/role";
-const ROLE_ENDPOINT = SERVER_URL + "/api/v1/role/";
-const ROLE_LOOKUP_ENDPOINT = SERVER_URL + "/api/v1/role/lookup";
+const ROLES_ENDPOINT: string = SERVER_URL + "/api/v1/role";
+const ALL_ROLES_ENDPOINT: string = ROLES_ENDPOINT + "?sort=name,asc";
+const ROLE_ENDPOINT: string = SERVER_URL + "/api/v1/role/";
+const ROLE_LOOKUP_ENDPOINT: string = SERVER_URL + "/api/v1/role/lookup";
 
 export async function getAllRoles(accessToken: string): Promise<RoleResponse[]> {
     return (await makeGet<RolePageResponse>(ALL_ROLES_ENDPOINT, accessToken)).content;
@@ -34,7 +35,7 @@ export async function lookupRoles(dto: LookupRolesRequest, accessToken: string):
 }
 
 export async function createRole(body: CreateRoleRequest, accessToken: string): Promise<string> {
-    return (await makePost<CreateRoleRequest>(ALL_ROLES_ENDPOINT, body, accessToken));
+    return (await makePost<CreateRoleRequest>(ROLES_ENDPOINT, body, accessToken));
 }
 
 export async function updateRole(roleId: string, body: UpdateRoleRequest, accessToken: string): Promise<void> {
