@@ -6,12 +6,15 @@ import SearchableList from "../components/common/SearchableList";
 import type { CardResponse } from "../types/responses/card/CardResponse";
 import CardDetails from "../components/card/CardDetails";
 import CreateCardForm from "../components/card/CreateCardForm";
+import type { PageProps } from "../types/props/PageProps";
+import type { CardPageResponse } from "../types/responses/card/CardPageResponse";
 
 function Cards() {
     const auth = useAuthSession();
     const location = useLocation();
     const navigate = useNavigate();
     const { cardId } = useParams();
+    const [page, setPage] = useState<PageProps>();
     const [cards, setCards] = useState<CardResponse[]>([]);
     const [query, setQuery] = useState<string>("");
     const isCreateCardPath = location.pathname === "/cards/new";
@@ -21,10 +24,11 @@ function Cards() {
 
         async function loadCards() {
             try {
-                const allCards = await getAllCards(auth.connectedUser.accessToken);
+                const allCards: CardPageResponse = await getAllCards(auth.connectedUser.accessToken);
 
                 if (isActive) {
-                    setCards(allCards);
+                    setPage({number: allCards.page.number, totalPages: allCards.page.totalPages})
+                    setCards(allCards.content);
                 }
             } catch (error) {
                 console.error("Failed to load cards", error);
@@ -64,6 +68,7 @@ function Cards() {
                         bulmaStyle: "is-warning",
                         onClick: () => {navigate("/cards/new")}
                     }}
+                    page={page}
                 >
                     {cardBlocks}
                 </SearchableList>

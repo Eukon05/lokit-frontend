@@ -7,12 +7,15 @@ import type { UserResponse } from "../types/responses/user/UserResponse";
 import UserDetails from "../components/user/UserDetails";
 import ConfirmationModal from "../components/common/ConfirmationModal";
 import toast from "react-hot-toast";
+import type { PageProps } from "../types/props/PageProps";
+import type { UsersPageResponse } from "../types/responses/user/UsersPageResponse";
 
 function Users() {
     const auth = useAuthSession();
     const location = useLocation();
     const navigate = useNavigate();
     const { userId } = useParams();
+    const [page, setPage] = useState<PageProps>();
     const [users, setUsers] = useState<UserResponse[]>([]);
     const [query, setQuery] = useState<string>("");
     const [syncing, setSyncing] = useState<boolean>(false);
@@ -37,10 +40,11 @@ function Users() {
 
         async function loadUsers() {
             try {
-                const idpUsers = await getIdPAllUsers(auth.connectedUser.accessToken);
+                const idpUsers: UsersPageResponse = await getIdPAllUsers(auth.connectedUser.accessToken);
 
                 if (isActive) {
-                    setUsers(idpUsers);
+                    setPage({number: idpUsers.page.number, totalPages: idpUsers.page.totalPages})
+                    setUsers(idpUsers.content);
                 }
             } catch (error) {
                 console.error("Failed to load users", error);
@@ -82,6 +86,7 @@ function Users() {
                         disabled: syncing,
                         loading: syncing
                     }}
+                    page={page}
                 >
                     {userBlocks}
                 </SearchableList>

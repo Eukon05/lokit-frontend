@@ -6,12 +6,15 @@ import SearchableList from "../components/common/SearchableList";
 import type { DeviceResponse } from "../types/responses/device/DeviceResponse";
 import DeviceDetails from "../components/device/DeviceDetails";
 import CreateDeviceForm from "../components/device/CreateDeviceForm";
+import type { PageProps } from "../types/props/PageProps";
+import type { DevicePageResponse } from "../types/responses/device/DevicePageResponse";
 
 function Devices() {
     const auth = useAuthSession();
     const navigate = useNavigate();
     const location = useLocation();
     const { deviceId } = useParams();
+    const [page, setPage] = useState<PageProps>();
     const [devices, setDevices] = useState<DeviceResponse[]>([]);
     const [query, setQuery] = useState<string>("");
     const isCreateDevicePath = location.pathname === "/devices/new";
@@ -21,10 +24,11 @@ function Devices() {
 
         async function loadRoles() {
             try {
-                const allDevices = await getAllDevices(auth.connectedUser.accessToken);
+                const allDevices: DevicePageResponse = await getAllDevices(auth.connectedUser.accessToken);
 
                 if (isActive) {
-                    setDevices(allDevices);
+                    setPage({number: allDevices.page.number, totalPages: allDevices.page.totalPages})
+                    setDevices(allDevices.content);
                 }
             } catch (error) {
                 console.error("Failed to load devices", error);
@@ -66,6 +70,7 @@ function Devices() {
                             onClick: () => { navigate("/devices/new") }
                         }
                     }
+                    page={page}
                 >
                     {deviceBlocks}
                 </SearchableList>

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { ButtonProps } from "./ButtonProps";
+import type { PageProps } from "./PageProps";
 
 export type SearchableListProps = {
 	title: string;
@@ -7,5 +8,6 @@ export type SearchableListProps = {
 	onQueryChange: (query: string) => void;
 	children: ReactNode;
 	emptyText: string;
-	button?: ButtonProps
+	button?: ButtonProps,
+	page?: PageProps
 };

@@ -6,12 +6,15 @@ import type { RoomResponse } from "../types/responses/room/RoomResponse";
 import RoomDetails from "../components/room/RoomDetails";
 import { NavLink, useLocation, useNavigate, useParams } from "react-router";
 import CreateRoomForm from "../components/room/CreateRoomForm";
+import type { PageProps } from "../types/props/PageProps";
+import type { RoomPageResponse } from "../types/responses/room/RoomPageResponse";
 
 function Rooms() {
     const auth = useAuthSession();
     const navigate = useNavigate();
     const location = useLocation();
     const {roomId} = useParams();
+    const [page, setPage] = useState<PageProps>();
     const [rooms, setRooms] = useState<RoomResponse[]>([]);
     const [query, setQuery] = useState<string>("");
     const isCreateRoomPath = location.pathname === "/rooms/new";
@@ -21,10 +24,11 @@ function Rooms() {
 
         async function loadRooms() {
             try {
-                const allRooms = await getAllRooms(auth.connectedUser.accessToken);
+                const allRooms: RoomPageResponse = await getAllRooms(auth.connectedUser.accessToken);
 
                 if (isActive) {
-                    setRooms(allRooms);
+                    setPage({number: allRooms.page.number, totalPages: allRooms.page.totalPages})
+                    setRooms(allRooms.content);
                 }
             } catch (error) {
                 console.error("Failed to load rooms", error);
@@ -67,6 +71,7 @@ function Rooms() {
                             onClick: () => { navigate("/rooms/new") }
                         }
                     }
+                    page={page}
                 >
                     {roomBlocks}
                 </SearchableList>

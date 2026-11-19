@@ -6,12 +6,15 @@ import SearchableList from "../components/common/SearchableList";
 import type { RoleResponse } from "../types/responses/role/RoleResponse";
 import RoleDetails from "../components/role/RoleDetails";
 import CreateRoleForm from "../components/role/CreateRoleForm";
+import type { PageProps } from "../types/props/PageProps";
+import type { RolePageResponse } from "../types/responses/role/RolePageResponse";
 
 function Roles() {
     const auth = useAuthSession();
     const location = useLocation();
     const navigate = useNavigate();
     const { roleId } = useParams();
+    const [page, setPage] = useState<PageProps>();
     const [roles, setRoles] = useState<RoleResponse[]>([]);
     const [query, setQuery] = useState<string>("");
     const isCreateRolePath = location.pathname === "/roles/new";
@@ -21,10 +24,11 @@ function Roles() {
 
         async function loadRoles() {
             try {
-                const allRoles = await getAllRoles(auth.connectedUser.accessToken);
+                const allRoles: RolePageResponse = await getAllRoles(auth.connectedUser.accessToken);
 
                 if (isActive) {
-                    setRoles(allRoles);
+                    setPage({number: allRoles.page.number, totalPages: allRoles.page.totalPages})
+                    setRoles(allRoles.content);
                 }
             } catch (error) {
                 console.error("Failed to load roles", error);
@@ -66,6 +70,7 @@ function Roles() {
                             onClick: () => { navigate("/roles/new") }
                         }
                     }
+                    page={page}
                 >
                     {roleBlocks}
                 </SearchableList>
