@@ -3,7 +3,7 @@ import type { UsersPageResponse } from "../types/responses/user/UsersPageRespons
 import type { UserResponse } from "../types/responses/user/UserResponse";
 import type { UserRolesResponse } from "../types/responses/user/UserRolesResponse";
 
-const ALL_IDP_USERS_ENDPOINT: string = SERVER_URL + "/api/v1/identity?sort=lastName,asc&sort=firstName,asc&size=20&page="
+const ALL_IDP_USERS_ENDPOINT: string = SERVER_URL + "/api/v1/identity?sort=lastName,asc&sort=firstName,asc&size=10&page="
 const IDP_USER_ENDPOINT: string = SERVER_URL + "/api/v1/identity/";
 const SYNC_IDP_USERS_ENDPOINT: string = SERVER_URL + "/api/v1/identity/sync";
 const USER_ENDPOINT: string = SERVER_URL + "/api/v1/user/";

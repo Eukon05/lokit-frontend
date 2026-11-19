@@ -15,6 +15,7 @@ function Roles() {
     const navigate = useNavigate();
     const { roleId } = useParams();
     const [page, setPage] = useState<PageProps>();
+    const [pageNumber, setPageNumber] = useState(0);
     const [roles, setRoles] = useState<RoleResponse[]>([]);
     const [query, setQuery] = useState<string>("");
     const isCreateRolePath = location.pathname === "/roles/new";
@@ -24,10 +25,10 @@ function Roles() {
 
         async function loadRoles() {
             try {
-                const allRoles: RolePageResponse = await getAllRoles(auth.connectedUser.accessToken);
+                const allRoles: RolePageResponse = await getAllRoles(auth.connectedUser.accessToken, pageNumber);
 
                 if (isActive) {
-                    setPage({number: allRoles.page.number, totalPages: allRoles.page.totalPages})
+                    setPage({number: allRoles.page.number, totalPages: allRoles.page.totalPages, setPage: setPageNumber})
                     setRoles(allRoles.content);
                 }
             } catch (error) {
@@ -40,7 +41,7 @@ function Roles() {
         return () => {
             isActive = false;
         };
-    }, [auth.connectedUser.accessToken, location.state?.refreshRoles])
+    }, [auth.connectedUser.accessToken, location.state?.refreshRoles, pageNumber])
 
     const roleBlocks = roles.filter(role => role.name.toLowerCase().includes(query.toLowerCase()) || role.description.toLowerCase().includes(query.toLowerCase()))
         .map(role => (

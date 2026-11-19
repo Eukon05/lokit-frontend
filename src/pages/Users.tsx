@@ -16,6 +16,7 @@ function Users() {
     const navigate = useNavigate();
     const { userId } = useParams();
     const [page, setPage] = useState<PageProps>();
+    const [pageNumber, setPageNumber] = useState(0);
     const [users, setUsers] = useState<UserResponse[]>([]);
     const [query, setQuery] = useState<string>("");
     const [syncing, setSyncing] = useState<boolean>(false);
@@ -40,10 +41,10 @@ function Users() {
 
         async function loadUsers() {
             try {
-                const idpUsers: UsersPageResponse = await getIdPAllUsers(auth.connectedUser.accessToken);
+                const idpUsers: UsersPageResponse = await getIdPAllUsers(auth.connectedUser.accessToken, pageNumber);
 
                 if (isActive) {
-                    setPage({number: idpUsers.page.number, totalPages: idpUsers.page.totalPages})
+                    setPage({number: idpUsers.page.number, totalPages: idpUsers.page.totalPages, setPage: setPageNumber})
                     setUsers(idpUsers.content);
                 }
             } catch (error) {
@@ -56,7 +57,7 @@ function Users() {
         return () => {
             isActive = false;
         };
-    }, [auth.connectedUser.accessToken, location.state?.refreshUsers])
+    }, [auth.connectedUser.accessToken, location.state?.refreshUsers, pageNumber])
 
     const userBlocks = users.filter(user => user.firstName.toLowerCase().includes(query.toLowerCase()) || user.lastName.toLowerCase().includes(query.toLowerCase()))
         .map(user => (

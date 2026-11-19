@@ -7,7 +7,7 @@ import type { DeviceCommandPageResponse } from "../types/responses/device/Device
 import type { SendDeviceCommandRequest } from "../types/requests/device/SendDeviceCommandRequest";
 
 const DEVICES_ENDPOINT: string = SERVER_URL + "/api/v1/device"
-const ALL_DEVICES_ENDPOINT: string = DEVICES_ENDPOINT + "?sort=name,asc&size=20&page="
+const ALL_DEVICES_ENDPOINT: string = DEVICES_ENDPOINT + "?sort=name,asc&size=10&page="
 const DEVICE_ENDPOINT: string = SERVER_URL + "/api/v1/device/"
 
 export async function getAllDevices(accessToken: string, page: number = 0): Promise<DevicePageResponse> {

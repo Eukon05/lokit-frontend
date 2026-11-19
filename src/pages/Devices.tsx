@@ -15,6 +15,7 @@ function Devices() {
     const location = useLocation();
     const { deviceId } = useParams();
     const [page, setPage] = useState<PageProps>();
+    const [pageNumber, setPageNumber] = useState(0);
     const [devices, setDevices] = useState<DeviceResponse[]>([]);
     const [query, setQuery] = useState<string>("");
     const isCreateDevicePath = location.pathname === "/devices/new";
@@ -24,10 +25,10 @@ function Devices() {
 
         async function loadRoles() {
             try {
-                const allDevices: DevicePageResponse = await getAllDevices(auth.connectedUser.accessToken);
+                const allDevices: DevicePageResponse = await getAllDevices(auth.connectedUser.accessToken, pageNumber);
 
                 if (isActive) {
-                    setPage({number: allDevices.page.number, totalPages: allDevices.page.totalPages})
+                    setPage({number: allDevices.page.number, totalPages: allDevices.page.totalPages, setPage: setPageNumber})
                     setDevices(allDevices.content);
                 }
             } catch (error) {
@@ -40,7 +41,7 @@ function Devices() {
         return () => {
             isActive = false;
         };
-    }, [auth.connectedUser.accessToken, location.state?.refreshDevices])
+    }, [auth.connectedUser.accessToken, location.state?.refreshDevices, pageNumber])
 
     const deviceBlocks = devices.filter(device => device.name.toLowerCase().includes(query.toLowerCase()) || device.description.toLowerCase().includes(query.toLowerCase()) || device.physicalAddress.toLowerCase().includes(query.toLowerCase()) || device.roomId.toLowerCase().includes(query.toLowerCase()))
         .map(device => (

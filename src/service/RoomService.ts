@@ -5,7 +5,7 @@ import type { CreateRoomRequest } from "../types/requests/room/CreateRoomRequest
 import type { UpdateRoomRequest } from "../types/requests/room/UpdateRoomRequest";
 
 const ROOMS_ENDPOINT: string = SERVER_URL + "/api/v1/room"
-const ALL_ROOMS_ENDPOINT: string = ROOMS_ENDPOINT + "?sort=name,asc&size=20&page="
+const ALL_ROOMS_ENDPOINT: string = ROOMS_ENDPOINT + "?sort=name,asc&size=10&page="
 const ROOM_ENDPOINT: string = SERVER_URL + "/api/v1/room/"
 
 export async function getAllRooms(accessToken: string, page: number = 0): Promise<RoomPageResponse> {

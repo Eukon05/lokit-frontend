@@ -15,6 +15,7 @@ function Cards() {
     const navigate = useNavigate();
     const { cardId } = useParams();
     const [page, setPage] = useState<PageProps>();
+    const [pageNumber, setPageNumber] = useState(0);
     const [cards, setCards] = useState<CardResponse[]>([]);
     const [query, setQuery] = useState<string>("");
     const isCreateCardPath = location.pathname === "/cards/new";
@@ -24,10 +25,10 @@ function Cards() {
 
         async function loadCards() {
             try {
-                const allCards: CardPageResponse = await getAllCards(auth.connectedUser.accessToken);
+                const allCards: CardPageResponse = await getAllCards(auth.connectedUser.accessToken, pageNumber);
 
                 if (isActive) {
-                    setPage({number: allCards.page.number, totalPages: allCards.page.totalPages})
+                    setPage({number: allCards.page.number, totalPages: allCards.page.totalPages, setPage: setPageNumber})
                     setCards(allCards.content);
                 }
             } catch (error) {
@@ -40,7 +41,7 @@ function Cards() {
         return () => {
             isActive = false;
         };
-    }, [auth.connectedUser.accessToken, location.state?.refreshCards])
+    }, [auth.connectedUser.accessToken, location.state?.refreshCards, pageNumber])
 
     const cardBlocks = cards.filter(card => card.id.toLowerCase().includes(query.toLowerCase()) || card.name.toLowerCase().includes(query.toLowerCase()) || card.userId.toLowerCase().includes(query.toLowerCase()))
         .map(card => (

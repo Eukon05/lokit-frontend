@@ -25,9 +25,9 @@ function SearchableList({ title, query, onQueryChange, children, emptyText, butt
 				{hasChildren ? children : emptyState}
 			</div>
 			{page && <div className="is-flex is-flex-direction-row is-justify-content-space-between is-align-items-center p-3">
-				<button className="button" disabled={page.number == 0}>Back</button>
+				<button className="button" disabled={page.number == 0} onClick={() => page.setPage(page.number - 1)}>Back</button>
 				<span>Page {page.number + 1} of {page.totalPages}</span>
-				<button className="button" disabled={page.number == page.totalPages - 1}>Next</button>
+				<button className="button" disabled={page.number == page.totalPages - 1} onClick={() => page.setPage(page.number + 1)}>Next</button>
 			</div>}
 		</div>
 	);

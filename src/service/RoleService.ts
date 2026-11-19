@@ -6,7 +6,7 @@ import type { CreateRoleRequest } from "../types/requests/role/CreateRoleRequest
 import type { UpdateRoleRequest } from "../types/requests/role/UpdateRoleRequest";
 
 const ROLES_ENDPOINT: string = SERVER_URL + "/api/v1/role";
-const ALL_ROLES_ENDPOINT: string = ROLES_ENDPOINT + "?sort=name,asc&size=20&page=";
+const ALL_ROLES_ENDPOINT: string = ROLES_ENDPOINT + "?sort=name,asc&size=10&page=";
 const ROLE_ENDPOINT: string = SERVER_URL + "/api/v1/role/";
 const ROLE_LOOKUP_ENDPOINT: string = SERVER_URL + "/api/v1/role/lookup";
 

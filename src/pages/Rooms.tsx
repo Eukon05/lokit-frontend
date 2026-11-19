@@ -15,6 +15,7 @@ function Rooms() {
     const location = useLocation();
     const {roomId} = useParams();
     const [page, setPage] = useState<PageProps>();
+    const [pageNumber, setPageNumber] = useState(0);
     const [rooms, setRooms] = useState<RoomResponse[]>([]);
     const [query, setQuery] = useState<string>("");
     const isCreateRoomPath = location.pathname === "/rooms/new";
@@ -24,10 +25,10 @@ function Rooms() {
 
         async function loadRooms() {
             try {
-                const allRooms: RoomPageResponse = await getAllRooms(auth.connectedUser.accessToken);
+                const allRooms: RoomPageResponse = await getAllRooms(auth.connectedUser.accessToken, pageNumber);
 
                 if (isActive) {
-                    setPage({number: allRooms.page.number, totalPages: allRooms.page.totalPages})
+                    setPage({number: allRooms.page.number, totalPages: allRooms.page.totalPages, setPage: setPageNumber})
                     setRooms(allRooms.content);
                 }
             } catch (error) {
@@ -40,7 +41,7 @@ function Rooms() {
         return () => {
             isActive = false;
         };
-    }, [auth.connectedUser.accessToken, location.state?.refreshRooms])
+    }, [auth.connectedUser.accessToken, location.state?.refreshRooms, pageNumber])
 
     const roomBlocks = rooms.filter(room => room.name.toLowerCase().includes(query.toLowerCase()) || room.description.toLowerCase().includes(query.toLowerCase()))
         .map(room => (
