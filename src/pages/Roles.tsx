@@ -28,8 +28,12 @@ function Roles() {
                 const allRoles: RolePageResponse = await getAllRoles(auth.connectedUser.accessToken, pageNumber);
 
                 if (isActive) {
-                    setPage({number: allRoles.page.number, totalPages: allRoles.page.totalPages, setPage: setPageNumber})
-                    setRoles(allRoles.content);
+                    if (allRoles.page.totalPages > 0 && pageNumber >= allRoles.page.totalPages)
+                        setPageNumber(allRoles.page.totalPages - 1);
+                    else {
+                        setPage({ number: allRoles.page.number, totalPages: allRoles.page.totalPages, setPage: setPageNumber })
+                        setRoles(allRoles.content);
+                    }
                 }
             } catch (error) {
                 console.error("Failed to load roles", error);

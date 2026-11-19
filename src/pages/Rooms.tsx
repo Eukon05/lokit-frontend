@@ -28,8 +28,12 @@ function Rooms() {
                 const allRooms: RoomPageResponse = await getAllRooms(auth.connectedUser.accessToken, pageNumber);
 
                 if (isActive) {
-                    setPage({number: allRooms.page.number, totalPages: allRooms.page.totalPages, setPage: setPageNumber})
-                    setRooms(allRooms.content);
+                    if (allRooms.page.totalPages > 0 && pageNumber >= allRooms.page.totalPages)
+                        setPageNumber(allRooms.page.totalPages - 1);
+                    else {
+                        setPage({number: allRooms.page.number, totalPages: allRooms.page.totalPages, setPage: setPageNumber})
+                        setRooms(allRooms.content);
+                    }
                 }
             } catch (error) {
                 console.error("Failed to load rooms", error);

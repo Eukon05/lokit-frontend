@@ -28,8 +28,12 @@ function Cards() {
                 const allCards: CardPageResponse = await getAllCards(auth.connectedUser.accessToken, pageNumber);
 
                 if (isActive) {
-                    setPage({number: allCards.page.number, totalPages: allCards.page.totalPages, setPage: setPageNumber})
-                    setCards(allCards.content);
+                    if (allCards.page.totalPages > 0 && pageNumber >= allCards.page.totalPages)
+                        setPageNumber(allCards.page.totalPages - 1);
+                    else {
+                        setPage({number: allCards.page.number, totalPages: allCards.page.totalPages, setPage: setPageNumber})
+                        setCards(allCards.content);
+                    }
                 }
             } catch (error) {
                 console.error("Failed to load cards", error);

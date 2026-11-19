@@ -28,8 +28,12 @@ function Devices() {
                 const allDevices: DevicePageResponse = await getAllDevices(auth.connectedUser.accessToken, pageNumber);
 
                 if (isActive) {
-                    setPage({number: allDevices.page.number, totalPages: allDevices.page.totalPages, setPage: setPageNumber})
-                    setDevices(allDevices.content);
+                    if (allDevices.page.totalPages > 0 && pageNumber >= allDevices.page.totalPages)
+                        setPageNumber(allDevices.page.totalPages - 1);
+                    else {
+                        setPage({number: allDevices.page.number, totalPages: allDevices.page.totalPages, setPage: setPageNumber})
+                        setDevices(allDevices.content);
+                    }
                 }
             } catch (error) {
                 console.error("Failed to load devices", error);

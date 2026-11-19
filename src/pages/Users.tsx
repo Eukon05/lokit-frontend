@@ -44,8 +44,12 @@ function Users() {
                 const idpUsers: UsersPageResponse = await getIdPAllUsers(auth.connectedUser.accessToken, pageNumber);
 
                 if (isActive) {
-                    setPage({number: idpUsers.page.number, totalPages: idpUsers.page.totalPages, setPage: setPageNumber})
-                    setUsers(idpUsers.content);
+                    if (idpUsers.page.totalPages > 0 && pageNumber >= idpUsers.page.totalPages)
+                        setPageNumber(idpUsers.page.totalPages - 1);
+                    else {
+                        setPage({number: idpUsers.page.number, totalPages: idpUsers.page.totalPages, setPage: setPageNumber})
+                        setUsers(idpUsers.content);
+                    }
                 }
             } catch (error) {
                 console.error("Failed to load users", error);
