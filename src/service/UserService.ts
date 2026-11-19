@@ -3,13 +3,13 @@ import type { UsersPageResponse } from "../types/responses/user/UsersPageRespons
 import type { UserResponse } from "../types/responses/user/UserResponse";
 import type { UserRolesResponse } from "../types/responses/user/UserRolesResponse";
 
-const ALL_IDP_USERS_ENDPOINT: string = SERVER_URL + "/api/v1/identity?sort=lastName,asc&sort=firstName,asc"
+const ALL_IDP_USERS_ENDPOINT: string = SERVER_URL + "/api/v1/identity?sort=lastName,asc&sort=firstName,asc&size=20&page="
 const IDP_USER_ENDPOINT: string = SERVER_URL + "/api/v1/identity/";
 const SYNC_IDP_USERS_ENDPOINT: string = SERVER_URL + "/api/v1/identity/sync";
 const USER_ENDPOINT: string = SERVER_URL + "/api/v1/user/";
 
-export async function getIdPAllUsers(accessToken: string): Promise<UserResponse[]> {
-    return (await makeGet<UsersPageResponse>(ALL_IDP_USERS_ENDPOINT, accessToken)).content;
+export async function getIdPAllUsers(accessToken: string, page: number = 0): Promise<UsersPageResponse> {
+    return (await makeGet<UsersPageResponse>(ALL_IDP_USERS_ENDPOINT + page, accessToken));
 }
 
 export async function getUser(userId: string, accessToken: string): Promise<UserResponse> {

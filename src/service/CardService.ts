@@ -7,13 +7,13 @@ import type { CreateCardRequest } from "../types/requests/card/CreateCardRequest
 import type { UpdateCardRequest } from "../types/requests/card/UpdateCardRequest";
 
 const CARDS_ENDPOINT: string = SERVER_URL + "/api/v1/card";
-const ALL_CARDS_ENDPOINT: string = CARDS_ENDPOINT + "?sort=name,asc";
+const ALL_CARDS_ENDPOINT: string = CARDS_ENDPOINT + "?sort=name,asc&size=10&page=";
 const CARD_ENDPOINT: string = SERVER_URL + "/api/v1/card/";
 const CARD_LOOKUP_ENDPOINT: string = SERVER_URL + "/api/v1/card/lookup";
 const USER_ENDPOINT: string = SERVER_URL + "/api/v1/user/";
 
-export async function getAllCards(accessToken: string): Promise<CardResponse[]> {
-    return (await makeGet<CardPageResponse>(ALL_CARDS_ENDPOINT, accessToken)).content;
+export async function getAllCards(accessToken: string, page: number = 0): Promise<CardPageResponse> {
+    return (await makeGet<CardPageResponse>(ALL_CARDS_ENDPOINT + page, accessToken));
 }
 
 export async function getCard(cardId: string, accessToken: string): Promise<CardResponse> {

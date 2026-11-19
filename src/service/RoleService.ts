@@ -6,12 +6,12 @@ import type { CreateRoleRequest } from "../types/requests/role/CreateRoleRequest
 import type { UpdateRoleRequest } from "../types/requests/role/UpdateRoleRequest";
 
 const ROLES_ENDPOINT: string = SERVER_URL + "/api/v1/role";
-const ALL_ROLES_ENDPOINT: string = ROLES_ENDPOINT + "?sort=name,asc";
+const ALL_ROLES_ENDPOINT: string = ROLES_ENDPOINT + "?sort=name,asc&size=20&page=";
 const ROLE_ENDPOINT: string = SERVER_URL + "/api/v1/role/";
 const ROLE_LOOKUP_ENDPOINT: string = SERVER_URL + "/api/v1/role/lookup";
 
-export async function getAllRoles(accessToken: string): Promise<RoleResponse[]> {
-    return (await makeGet<RolePageResponse>(ALL_ROLES_ENDPOINT, accessToken)).content;
+export async function getAllRoles(accessToken: string, page: number = 0): Promise<RolePageResponse> {
+    return (await makeGet<RolePageResponse>(ALL_ROLES_ENDPOINT + page, accessToken));
 }
 
 export async function getRole(roleId: string, accessToken: string): Promise<RoleResponse> {

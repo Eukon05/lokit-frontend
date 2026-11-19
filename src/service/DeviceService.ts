@@ -4,15 +4,14 @@ import type { DevicePageResponse } from "../types/responses/device/DevicePageRes
 import type { CreateDeviceRequest } from "../types/requests/device/CreateDeviceRequest";
 import type { UpdateDeviceRequest } from "../types/requests/device/UpdateDeviceRequest";
 import type { DeviceCommandPageResponse } from "../types/responses/device/DeviceCommandPageResponse";
-import type { DeviceCommandResponse } from "../types/responses/device/DeviceCommandResponse";
 import type { SendDeviceCommandRequest } from "../types/requests/device/SendDeviceCommandRequest";
 
 const DEVICES_ENDPOINT: string = SERVER_URL + "/api/v1/device"
-const ALL_DEVICES_ENDPOINT: string = DEVICES_ENDPOINT + "?sort=name,asc"
+const ALL_DEVICES_ENDPOINT: string = DEVICES_ENDPOINT + "?sort=name,asc&size=20&page="
 const DEVICE_ENDPOINT: string = SERVER_URL + "/api/v1/device/"
 
-export async function getAllDevices(accessToken: string): Promise<DeviceResponse[]> {
-    return (await makeGet<DevicePageResponse>(ALL_DEVICES_ENDPOINT, accessToken)).content;
+export async function getAllDevices(accessToken: string, page: number = 0): Promise<DevicePageResponse> {
+    return (await makeGet<DevicePageResponse>(ALL_DEVICES_ENDPOINT + page, accessToken));
 }
 
 export async function getDevice(deviceId: string, accessToken: string): Promise<DeviceResponse> {
@@ -47,8 +46,8 @@ export async function removeDeviceRoom(deviceId: string, accessToken: string): P
     await makeDelete(DEVICE_ENDPOINT + deviceId + "/room", accessToken);
 }
 
-export async function getDeviceCommands(deviceId: string, accessToken: string): Promise<DeviceCommandResponse[]> {
-    return (await makeGet<DeviceCommandPageResponse>(DEVICE_ENDPOINT + deviceId + '/commands', accessToken)).content;
+export async function getDeviceCommands(deviceId: string, accessToken: string, page = 0): Promise<DeviceCommandPageResponse> {
+    return (await makeGet<DeviceCommandPageResponse>(DEVICE_ENDPOINT + deviceId + '/commands?size=20&page=' + page, accessToken));
 }
 
 export async function sendDeviceCommand(deviceId: string, body: SendDeviceCommandRequest, accessToken: string) : Promise<string> {
