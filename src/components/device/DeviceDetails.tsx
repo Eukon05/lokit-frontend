@@ -125,7 +125,7 @@ function DeviceDetails({ deviceId }: DeviceDetailsProps) {
                 if (isActive) {
                     setDeviceDetails(device);
                     setRoomDetails(room);
-                    setDeviceCommands(commands);
+                    setDeviceCommands(commands.content);
                 }
             } catch (error) {
                 console.error("Failed to load device " + deviceId, error);
