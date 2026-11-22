@@ -22,7 +22,7 @@ function AssignRoleModal({ excludeRoles, onConfirm, onCancel }: AssignRoleModalP
 
         async function loadRoles() {
             try {
-                let allRoles = await getAllRoles(auth.connectedUser.accessToken);
+                let allRoles = (await getAllRoles(auth.connectedUser.accessToken)).content;
                 if (excludeRoles)
                     allRoles = allRoles.filter(r => !excludeRoles.some(excludedRole => excludedRole.id === r.id));
 
