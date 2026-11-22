@@ -22,7 +22,7 @@ function AssignDeviceRoomModal({ onConfirm, onCancel }: AssignDeviceRoomModalPro
 
         async function loadRooms() {
             try {
-                const allRooms = await getAllRooms(auth.connectedUser.accessToken);
+                const allRooms = (await getAllRooms(auth.connectedUser.accessToken)).content;
 
                 if (isActive) {
                     setRooms(allRooms);
